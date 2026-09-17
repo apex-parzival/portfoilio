@@ -1,171 +1,222 @@
-import { useRef, useState } from 'react';
-import { motion } from 'framer-motion';
-
-const projects = [
-    {
-        title: 'BINKS',
-        reveal: 'SMART WASTE MANAGEMENT',
-        desc: 'AI + Blockchain system for waste classification and token-based user incentives',
-        tech: 'Python, React, Solidity, Hardhat, MongoDB'
-    },
-    {
-        title: 'ABHIMANYU',
-        reveal: 'ELEPHANT WEIGHT ESTIMATION',
-        desc: 'Computer vision system to estimate elephant weight from images for wildlife conservation',
-        tech: 'Python, CNNs, OpenCV, PyTorch/TensorFlow'
-    },
-    {
-        title: 'PERSONALIZED MEDICINE',
-        reveal: 'GENETIC MUTATION PREDICTION',
-        desc: 'NLP-driven deep learning model to predict genetic mutations from clinical text',
-        tech: 'Python, BioBERT, Hugging Face, PyTorch'
-    },
-    {
-        title: 'BOLTBOX',
-        reveal: 'AI DEV TOOLKIT',
-        desc: 'Full-stack platform to bootstrap projects with templates and AI stack suggestions',
-        tech: 'Next.js, TypeScript, Tailwind CSS, MongoDB'
-    },
-    {
-        title: 'VIRTUAL DIARY',
-        reveal: 'SOCIAL MEMORY PLATFORM',
-        desc: 'Collaborative web app for storing memories with friends, groups, and media',
-        tech: 'React, Node.js, Express, MongoDB'
-    },
-    {
-        title: 'FEED FORWARD',
-        reveal: 'CRYPTO FOR FOOD REDISTRIBUTION',
-        desc: 'Blockchain-based incentive system for efficient leftover food redistribution',
-        tech: 'Solidity, Hardhat, Web3, React'
-    },
-    {
-        title: 'IOT INTEGRATION',
-        reveal: '3D CIRCUIT SYSTEM',
-        desc: 'ESP32-based hardware system integrating multiple sensors with real-time display',
-        tech: 'ESP32, Embedded C, Load Cell, Ultrasonic, IR, Camera'
-    }
-];
+import { useMemo, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { projectCategories, projects } from '../../data/projects';
+import type { ProjectCategory } from '../../data/projects';
 
 export const Projects = () => {
-    const sectionRef = useRef<HTMLDivElement>(null);
+    const [filter, setFilter] = useState<ProjectCategory | 'All'>('All');
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+    const [expanded, setExpanded] = useState<string | null>(null);
 
-    const handleMouseMove = (e: React.MouseEvent) => {
-        if (!sectionRef.current) return;
-        const rect = sectionRef.current.getBoundingClientRect();
-        sectionRef.current.style.setProperty('--mx', `${e.clientX - rect.left}px`);
-        sectionRef.current.style.setProperty('--my', `${e.clientY - rect.top}px`);
-    };
+    const visible = useMemo(
+        () => (filter === 'All' ? projects : projects.filter((p) => p.category.includes(filter))),
+        [filter]
+    );
 
-    const handleMouseLeave = () => {
-        if (!sectionRef.current) return;
-        sectionRef.current.style.setProperty('--mx', '-200px');
-        sectionRef.current.style.setProperty('--my', '-200px');
-        setHoveredIndex(null);
-    };
+    const clientCount = projects.filter((p) => p.context === 'Client').length;
 
     return (
-        <section
-            ref={sectionRef}
-            id="projects"
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
-            className="relative overflow-hidden"
-            style={{ '--mx': '-200px', '--my': '-200px' } as React.CSSProperties}
-        >
-            {/* ─── Front Layer ─── */}
-            <div className="py-32 px-8 md:px-12 lg:px-20 relative z-10">
+        <section id="projects" className="py-32 px-8 md:px-12 lg:px-20">
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
                 <motion.p
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.8 }}
-                    className="text-cream/60 text-xs tracking-[0.4em] uppercase mb-16"
+                    className="text-cream/60 text-xs tracking-[0.4em] uppercase"
                 >
                     P R O J E C T S
                 </motion.p>
+                <motion.p
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8, delay: 0.1 }}
+                    className="text-xs font-mono text-foreground/30"
+                >
+                    {projects.length} selected · {clientCount} shipped for clients
+                </motion.p>
+            </div>
 
-                <div>
-                    {projects.map((project, i) => (
-                        <motion.div
-                            key={project.title}
-                            initial={{ opacity: 0, y: 40 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.6, delay: i * 0.08 }}
-                            className={`border-t border-white/10 py-6 md:py-8 -mx-8 md:-mx-12 lg:-mx-20 px-8 md:px-12 lg:px-20 transition-colors duration-300 ${hoveredIndex === i ? 'bg-accent' : 'hover:bg-white/[0.03]'
+            {/* ─── Category filter ─── */}
+            <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+                className="flex flex-wrap gap-2 mb-12"
+                role="group"
+                aria-label="Filter projects by category"
+            >
+                {projectCategories.map((cat) => {
+                    const active = filter === cat;
+                    const count =
+                        cat === 'All'
+                            ? projects.length
+                            : projects.filter((p) => p.category.includes(cat)).length;
+
+                    return (
+                        <button
+                            key={cat}
+                            aria-pressed={active}
+                            onClick={() => {
+                                setFilter(cat);
+                                setExpanded(null);
+                            }}
+                            className={`px-4 py-2 rounded-full border text-xs tracking-widest uppercase transition-colors duration-300 ${active
+                                ? 'bg-accent border-accent text-[#0a0a0a] font-bold'
+                                : 'border-white/15 text-foreground/50 hover:border-accent/50 hover:text-accent'
                                 }`}
-                            onMouseEnter={() => setHoveredIndex(i)}
-                            onMouseLeave={() => setHoveredIndex(null)}
                             data-cursor-hide
                         >
-                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-8">
-                                <h3 className={`text-[clamp(1.8rem,5vw,4rem)] font-black uppercase leading-none tracking-[-0.03em] transition-colors duration-300 ${hoveredIndex === i ? 'text-[#0a0a0a]' : 'text-cream'
-                                    }`}>
-                                    {project.title}
-                                </h3>
-                                <div className="flex items-center gap-6 justify-between md:justify-end w-full md:w-auto">
-                                    <div className="md:text-right flex-1 md:flex-none">
-                                        <span className={`text-sm block transition-colors duration-300 ${hoveredIndex === i ? 'text-[#0a0a0a]/60' : 'text-foreground/30'
-                                            }`}>
-                                            {project.desc}
-                                        </span>
-                                        <span className={`text-xs font-mono mt-1 block transition-colors duration-300 ${hoveredIndex === i ? 'text-[#0a0a0a]/40' : 'text-accent/60'
-                                            }`}>
-                                            {project.tech}
-                                        </span>
-                                    </div>
-                                    <span className={`text-sm font-mono transition-colors duration-300 ${hoveredIndex === i ? 'text-[#0a0a0a]/40' : 'text-foreground/15'
-                                        }`}>
-                                        0{i + 1}
-                                    </span>
-                                </div>
-                            </div>
-                        </motion.div>
-                    ))}
-                    <div className="border-t border-white/10"></div>
-                </div>
-            </div>
+                            {cat} <span className="font-mono opacity-50">{count}</span>
+                        </button>
+                    );
+                })}
+            </motion.div>
 
-            {/* ─── Reveal Layer ─── */}
-            <div
-                className={`absolute inset-0 z-20 bg-accent pointer-events-none hidden md:block transition-opacity duration-300 ${hoveredIndex !== null ? 'opacity-0' : 'opacity-100'}`}
-                style={{ clipPath: 'circle(120px at var(--mx) var(--my))' }}
-            >
-                <div className="py-32 px-8 md:px-12 lg:px-20">
-                    <p className="text-[#0a0a0a]/60 text-xs tracking-[0.4em] uppercase mb-16">
-                        W O R K
-                    </p>
-                    <div>
-                        {projects.map((project, i) => (
-                            <div
+            {/* ─── Project rows ─── */}
+            <div>
+                <AnimatePresence initial={false}>
+                    {visible.map((project, i) => {
+                        const isHovered = hoveredIndex === i;
+                        const isOpen = expanded === project.title;
+
+                        return (
+                            <motion.div
                                 key={project.title}
-                                className="border-t border-[#0a0a0a]/20 py-6 md:py-8 -mx-8 md:-mx-12 lg:-mx-20 px-8 md:px-12 lg:px-20"
+                                layout
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                transition={{
+                                    duration: 0.4,
+                                    delay: Math.min(i * 0.04, 0.3),
+                                    layout: { duration: 0.35, ease: [0.76, 0, 0.24, 1] },
+                                }}
+                                className={`border-t border-white/10 -mx-8 md:-mx-12 lg:-mx-20 px-8 md:px-12 lg:px-20 transition-colors duration-300 ${isHovered && !isOpen ? 'bg-accent' : 'hover:bg-white/[0.03]'
+                                    }`}
+                                onMouseEnter={() => setHoveredIndex(i)}
+                                onMouseLeave={() => setHoveredIndex(null)}
+                                data-cursor-hide
                             >
-                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-8">
-                                    <h3 className="text-[clamp(1.8rem,5vw,4rem)] font-black uppercase leading-none tracking-[-0.03em] text-[#0a0a0a]">
-                                        {project.reveal}
-                                    </h3>
-                                    <div className="flex items-center gap-6 justify-between md:justify-end w-full md:w-auto">
-                                        <div className="md:text-right flex-1 md:flex-none">
-                                            <span className="text-sm block text-[#0a0a0a]/60">
-                                                {project.desc}
+                                <button
+                                    onClick={() => setExpanded(isOpen ? null : project.title)}
+                                    aria-expanded={isOpen}
+                                    className="w-full text-left py-6 md:py-8"
+                                >
+                                    {/*
+                                      * Explicit minmax(0,…) tracks: with `auto` minimums a long
+                                      * unbroken line can push a column past its share and collide
+                                      * with its neighbour.
+                                      */}
+                                    <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] md:items-center gap-3 md:gap-10">
+                                        <div className="min-w-0">
+                                            <span
+                                                className={`text-[10px] md:text-[11px] tracking-[0.25em] uppercase block mb-2 transition-colors duration-300 ${isHovered && !isOpen ? 'text-[#0a0a0a]/50' : 'text-accent/70'
+                                                    }`}
+                                            >
+                                                {project.reveal}
                                             </span>
-                                            <span className="text-xs font-mono mt-1 block text-[#0a0a0a]/40">
-                                                {project.tech}
+                                            <h3
+                                                className={`text-[clamp(1.35rem,2.6vw,2.25rem)] font-black uppercase leading-[0.95] tracking-[-0.03em] transition-colors duration-300 ${isHovered && !isOpen ? 'text-[#0a0a0a]' : 'text-cream'
+                                                    }`}
+                                            >
+                                                {project.title}
+                                            </h3>
+                                        </div>
+
+                                        <div className="min-w-0 flex items-start gap-6 md:justify-end">
+                                            <div className="min-w-0 flex-1 md:text-right">
+                                                <span
+                                                    className={`text-sm block transition-colors duration-300 ${isHovered && !isOpen ? 'text-[#0a0a0a]/70' : 'text-foreground/40'
+                                                        }`}
+                                                >
+                                                    {project.desc}
+                                                </span>
+                                                <span
+                                                    className={`text-xs font-mono mt-1 block transition-colors duration-300 ${isHovered && !isOpen ? 'text-[#0a0a0a]/50' : 'text-foreground/25'
+                                                        }`}
+                                                >
+                                                    {project.org} · {project.year}
+                                                </span>
+                                            </div>
+                                            <span
+                                                className={`text-sm font-mono shrink-0 transition-all duration-300 ${isHovered && !isOpen ? 'text-[#0a0a0a]/50' : 'text-foreground/20'
+                                                    } ${isOpen ? 'rotate-45' : ''}`}
+                                                aria-hidden="true"
+                                            >
+                                                +
                                             </span>
                                         </div>
-                                        <span className="text-sm font-mono text-[#0a0a0a]/40">
-                                            0{i + 1}
-                                        </span>
                                     </div>
-                                </div>
-                            </div>
-                        ))}
-                        <div className="border-t border-[#0a0a0a]/20"></div>
-                    </div>
-                </div>
+                                </button>
+
+                                <AnimatePresence initial={false}>
+                                    {isOpen && (
+                                        <motion.div
+                                            initial={{ height: 0, opacity: 0 }}
+                                            animate={{ height: 'auto', opacity: 1 }}
+                                            exit={{ height: 0, opacity: 0 }}
+                                            transition={{ duration: 0.35, ease: [0.76, 0, 0.24, 1] }}
+                                            className="overflow-hidden"
+                                        >
+                                            <div className="pb-10 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8 lg:gap-16">
+                                                <ul className="space-y-3">
+                                                    {project.highlights.map((h) => (
+                                                        <li
+                                                            key={h}
+                                                            className="text-sm md:text-base text-foreground/60 leading-relaxed pl-5 relative"
+                                                        >
+                                                            <span className="absolute left-0 top-[0.6em] w-2 h-px bg-accent" />
+                                                            {h}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+
+                                                <div className="space-y-6">
+                                                    <div>
+                                                        <p className="text-[10px] tracking-[0.3em] uppercase text-foreground/30 mb-3">
+                                                            Stack
+                                                        </p>
+                                                        <div className="flex flex-wrap gap-2">
+                                                            {project.tech.map((t) => (
+                                                                <span
+                                                                    key={t}
+                                                                    className="px-3 py-1 rounded-full border border-white/10 text-xs font-mono text-foreground/50"
+                                                                >
+                                                                    {t}
+                                                                </span>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-[10px] tracking-[0.3em] uppercase text-foreground/30 mb-2">
+                                                            Type
+                                                        </p>
+                                                        <p className="text-sm text-accent">
+                                                            {project.context === 'Client'
+                                                                ? 'Client engagement'
+                                                                : 'Academic / personal'}
+                                                            {' · '}
+                                                            {project.category.join(', ')}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </motion.div>
+                        );
+                    })}
+                </AnimatePresence>
+                <div className="border-t border-white/10" />
             </div>
+
+            <p className="mt-8 text-xs text-foreground/25">
+                Client repositories are private — happy to walk through architecture and code on a call.
+            </p>
         </section>
     );
 };

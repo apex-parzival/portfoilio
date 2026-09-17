@@ -11,7 +11,6 @@
   color-scheme: dark;
   color: #ededed;
   background-color: #0a0a0a;
-  cursor: none;
 }
 
 body {
@@ -19,18 +18,31 @@ body {
   min-width: 320px;
   min-height: 100vh;
   overflow-x: hidden;
-  cursor: none;
   background-color: #0a0a0a;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-a,
-button,
-input,
-textarea,
-select {
+/*
+ * The native cursor is only hidden when the JS cursor is actually mounted
+ * (fine pointers). On touch — or if the script fails — the real cursor stays,
+ * so the page is never left with no pointer at all.
+ */
+html.custom-cursor-active,
+html.custom-cursor-active body,
+html.custom-cursor-active a,
+html.custom-cursor-active button,
+html.custom-cursor-active input,
+html.custom-cursor-active textarea,
+html.custom-cursor-active select {
   cursor: none;
+}
+
+/* Keyboard users need to see where they are. */
+:focus-visible {
+  outline: 2px solid #FF4D00;
+  outline-offset: 3px;
+  border-radius: 2px;
 }
 
 /* Custom Scrollbar */
@@ -96,4 +108,20 @@ select {
 
 .accent-row * {
   color: #0a0a0a !important;
+}
+
+/*
+ * Reduced motion: keep the layout and the colour transitions, drop the
+ * long travel animations and the spotlight parallax.
+ */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

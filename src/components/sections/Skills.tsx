@@ -2,11 +2,36 @@ import { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 
 const skills = [
-    { title: 'AI & ML', desc: 'End-to-end intelligence from CV/NLP model training to manufacturing reliable, production-ready pipelines.' },
-    { title: 'BACKEND', desc: 'High-performance systems via Node.js & Express, featuring secure auth, caching, and robust API design.' },
-    { title: 'FULL-STACK', desc: 'Modern, component-driven interfaces built with Next.js, TypeScript, and responsive Tailwind styling.' },
-    { title: 'WEB3', desc: 'Decentralized architecture with Solidity smart contracts, token design, and secure Web3 integrations.' },
-    { title: 'TOOLS', desc: 'Streamlined workflows using Python, Docker, Git, and CI/CD for efficient development and testing.' },
+    {
+        title: 'AI & ML',
+        desc: 'LLM pipelines, agentic workflows, retrieval and embeddings, computer vision and NLP — trained, evaluated and actually deployed.',
+        tech: ['PyTorch', 'Hugging Face', 'Gemini', 'AWS Bedrock', 'OpenCV', 'InsightFace', 'Embeddings', 'RAG'],
+    },
+    {
+        title: 'BACKEND',
+        desc: 'Async APIs, relational data modelling, row-level multi-tenancy, auth and token rotation, caching and rate limiting.',
+        tech: ['FastAPI', 'Node.js', 'Express', 'PostgreSQL', 'MongoDB', 'Redis', 'JWT', 'SSE'],
+    },
+    {
+        title: 'FULL-STACK',
+        desc: 'Component-driven product interfaces with real server state, not just screens — typed end to end.',
+        tech: ['Next.js', 'React', 'TypeScript', 'Tailwind', 'TanStack Query', 'Zustand', 'Prisma'],
+    },
+    {
+        title: 'CLOUD & DEVOPS',
+        desc: 'Containerised services, CI/CD that actually deploys, managed data stores and cost-aware infrastructure choices.',
+        tech: ['AWS', 'Docker', 'GitHub Actions', 'Vercel', 'Amplify', 'Firebase', 'Supabase', 'Kubernetes'],
+    },
+    {
+        title: 'WEB3',
+        desc: 'Smart contract design, token incentive mechanics and safe integration between chain state and application state.',
+        tech: ['Solidity', 'Hardhat', 'Web3.js', 'Ethers'],
+    },
+    {
+        title: 'FOUNDATIONS',
+        desc: 'System design, data structures and algorithms, testing discipline, and writing the docs that outlive the sprint.',
+        tech: ['Python', 'C++', 'SQL', 'Git', 'System Design', 'Testing'],
+    },
 ];
 
 export const Skills = () => {
@@ -27,6 +52,93 @@ export const Skills = () => {
         setHoveredIndex(null);
     };
 
+    const renderList = (isReveal: boolean) => (
+        <div className="py-32 px-8 md:px-12 lg:px-20">
+            <p
+                className={`text-xs tracking-[0.4em] uppercase mb-16 ${isReveal ? 'text-[#0a0a0a]/60' : 'text-cream/60'
+                    }`}
+            >
+                {isReveal ? 'E X P E R T I S E' : 'S K I L L S'}
+            </p>
+
+            <div>
+                {skills.map((skill, i) => {
+                    const active = !isReveal && hoveredIndex === i;
+                    const dark = isReveal || active;
+
+                    const Row = (
+                        <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)] md:items-start gap-3 md:gap-10">
+                            <h3
+                                className={`text-[clamp(1.35rem,2.6vw,2.25rem)] font-black uppercase leading-[0.95] tracking-[-0.03em] min-w-0 transition-colors duration-300 ${dark ? 'text-[#0a0a0a]' : 'text-cream'
+                                    }`}
+                            >
+                                {skill.title}
+                            </h3>
+
+                            <div className="min-w-0 flex items-start gap-6 md:justify-end">
+                                <div className="min-w-0 flex-1 md:text-right">
+                                    <span
+                                        className={`text-sm block transition-colors duration-300 ${dark ? 'text-[#0a0a0a]/60' : 'text-foreground/40'
+                                            }`}
+                                    >
+                                        {skill.desc}
+                                    </span>
+                                    <div className="flex flex-wrap md:justify-end gap-2 mt-3">
+                                        {skill.tech.map((t) => (
+                                            <span
+                                                key={t}
+                                                className={`px-2.5 py-1 rounded-full border text-[11px] font-mono transition-colors duration-300 ${dark
+                                                    ? 'border-[#0a0a0a]/25 text-[#0a0a0a]/60'
+                                                    : 'border-white/10 text-foreground/35'
+                                                    }`}
+                                            >
+                                                {t}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                                <span
+                                    className={`text-sm font-mono shrink-0 transition-colors duration-300 ${dark ? 'text-[#0a0a0a]/40' : 'text-foreground/15'
+                                        }`}
+                                >
+                                    0{i + 1}
+                                </span>
+                            </div>
+                        </div>
+                    );
+
+                    const rowClass = `border-t -mx-8 md:-mx-12 lg:-mx-20 px-8 md:px-12 lg:px-20 py-6 md:py-8 transition-colors duration-300 ${isReveal ? 'border-[#0a0a0a]/20' : 'border-white/10'
+                        } ${active ? 'bg-accent' : isReveal ? '' : 'hover:bg-white/[0.03]'}`;
+
+                    if (isReveal) {
+                        return (
+                            <div key={skill.title} className={rowClass}>
+                                {Row}
+                            </div>
+                        );
+                    }
+
+                    return (
+                        <motion.div
+                            key={skill.title}
+                            initial={{ opacity: 0, y: 40 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.6, delay: i * 0.08 }}
+                            className={rowClass}
+                            onMouseEnter={() => setHoveredIndex(i)}
+                            onMouseLeave={() => setHoveredIndex(null)}
+                            data-cursor-hide
+                        >
+                            {Row}
+                        </motion.div>
+                    );
+                })}
+                <div className={`border-t ${isReveal ? 'border-[#0a0a0a]/20' : 'border-white/10'}`} />
+            </div>
+        </div>
+    );
+
     return (
         <section
             ref={sectionRef}
@@ -37,89 +149,16 @@ export const Skills = () => {
             style={{ '--mx': '-200px', '--my': '-200px' } as React.CSSProperties}
         >
             {/* ─── Front Layer ─── */}
-            <div className="py-32 px-8 md:px-12 lg:px-20 relative z-10">
-                <motion.p
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.8 }}
-                    className="text-cream/60 text-xs tracking-[0.4em] uppercase mb-16"
-                >
-                    S K I L L S
-                </motion.p>
-
-                <div>
-                    {skills.map((skill, i) => (
-                        <motion.div
-                            key={skill.title}
-                            initial={{ opacity: 0, y: 40 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.6, delay: i * 0.08 }}
-                            className={`border-t border-white/10 -mx-8 md:-mx-12 lg:-mx-20 px-8 md:px-12 lg:px-20 py-6 md:py-8 transition-colors duration-300 ${hoveredIndex === i ? 'bg-accent' : 'hover:bg-white/[0.03]'
-                                }`}
-                            onMouseEnter={() => setHoveredIndex(i)}
-                            onMouseLeave={() => setHoveredIndex(null)}
-                            data-cursor-hide
-                        >
-                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-8">
-                                <h3
-                                    className={`text-[clamp(1.8rem,5vw,4rem)] font-black uppercase leading-none tracking-[-0.03em] transition-colors duration-300 ${hoveredIndex === i ? 'text-[#0a0a0a]' : 'text-cream'
-                                        }`}
-                                >
-                                    {skill.title}
-                                </h3>
-
-                                <div className="flex items-center gap-6 justify-between md:justify-end w-full md:w-auto">
-                                    <span className={`text-sm md:text-right max-w-full md:max-w-[320px] transition-colors duration-300 ${hoveredIndex === i ? 'text-[#0a0a0a]/60' : 'text-foreground/30'
-                                        }`}>
-                                        {skill.desc}
-                                    </span>
-                                    <span className={`text-sm font-mono transition-colors duration-300 ${hoveredIndex === i ? 'text-[#0a0a0a]/40' : 'text-foreground/15'
-                                        }`}>
-                                        0{i + 1}
-                                    </span>
-                                </div>
-                            </div>
-                        </motion.div>
-                    ))}
-                    <div className="border-t border-white/10"></div>
-                </div>
-            </div>
+            <div className="relative z-10">{renderList(false)}</div>
 
             {/* ─── Reveal Layer ─── */}
             <div
-                className={`absolute inset-0 z-20 bg-accent pointer-events-none hidden md:block transition-opacity duration-300 ${hoveredIndex !== null ? 'opacity-0' : 'opacity-100'}`}
+                className={`absolute inset-0 z-20 bg-accent pointer-events-none hidden md:block motion-reduce:!hidden transition-opacity duration-300 ${hoveredIndex !== null ? 'opacity-0' : 'opacity-100'
+                    }`}
                 style={{ clipPath: 'circle(120px at var(--mx) var(--my))' }}
+                aria-hidden="true"
             >
-                <div className="py-32 px-8 md:px-12 lg:px-20">
-                    <p className="text-[#0a0a0a]/60 text-xs tracking-[0.4em] uppercase mb-16">
-                        E X P E R T I S E
-                    </p>
-                    <div>
-                        {skills.map((skill, i) => (
-                            <div
-                                key={skill.title}
-                                className="border-t border-[#0a0a0a]/20 -mx-8 md:-mx-12 lg:-mx-20 px-8 md:px-12 lg:px-20 py-6 md:py-8"
-                            >
-                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-8">
-                                    <h3 className="text-[clamp(1.8rem,5vw,4rem)] font-black uppercase leading-none tracking-[-0.03em] text-[#0a0a0a]">
-                                        {skill.title}
-                                    </h3>
-                                    <div className="flex items-center gap-6 justify-between md:justify-end w-full md:w-auto">
-                                        <span className="text-sm md:text-right max-w-full md:max-w-[320px] text-[#0a0a0a]/60">
-                                            {skill.desc}
-                                        </span>
-                                        <span className="text-sm font-mono text-[#0a0a0a]/40">
-                                            0{i + 1}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                        <div className="border-t border-[#0a0a0a]/20"></div>
-                    </div>
-                </div>
+                {renderList(true)}
             </div>
         </section>
     );

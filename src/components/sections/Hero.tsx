@@ -7,6 +7,11 @@ const heroWords = [
     { primary: 'ENGINEER', reveal: 'ENGINEER', accent: false },
 ];
 
+const taglines = {
+    primary: 'Building the systems that quietly hold everything up.',
+    reveal: 'Building models that survive contact with real data.',
+};
+
 export const Hero = ({ viewMode }: { viewMode: ViewMode }) => {
     const sectionRef = useRef<HTMLDivElement>(null);
 
@@ -34,7 +39,7 @@ export const Hero = ({ viewMode }: { viewMode: ViewMode }) => {
                 className={`text-xs md:text-sm tracking-[0.4em] uppercase mb-8 ${isReveal ? 'text-[#0a0a0a]/60' : 'text-cream'
                     }`}
             >
-                {isReveal ? 'MOHAMMEDYASEEN SUTAR' : 'MOHAMMEDYASEEN SUTAR'}
+                MOHAMMED YASEEN SUTAR
             </motion.p>
 
             {heroWords.map((word, i) => (
@@ -60,6 +65,30 @@ export const Hero = ({ viewMode }: { viewMode: ViewMode }) => {
                     )}
                 </div>
             ))}
+
+            <motion.p
+                {...(!isReveal ? {
+                    initial: { opacity: 0, y: 16 },
+                    animate: { opacity: 1, y: 0 },
+                    transition: { duration: 0.8, delay: 0.9 },
+                } : {})}
+                className={`mt-8 max-w-xl text-sm md:text-base leading-relaxed ${isReveal ? 'text-[#0a0a0a]/70' : 'text-foreground/40'
+                    }`}
+            >
+                {isReveal ? taglines.reveal : taglines.primary}
+            </motion.p>
+
+            <motion.span
+                {...(!isReveal ? {
+                    initial: { opacity: 0 },
+                    animate: { opacity: 1 },
+                    transition: { duration: 0.8, delay: 1.2 },
+                } : {})}
+                className={`mt-14 text-[10px] tracking-[0.3em] uppercase ${isReveal ? 'text-[#0a0a0a]/40' : 'text-foreground/25'
+                    }`}
+            >
+                Scroll ↓
+            </motion.span>
         </div>
     );
 
@@ -85,6 +114,7 @@ export const Hero = ({ viewMode }: { viewMode: ViewMode }) => {
                 style={{
                     clipPath: viewMode === 'both' ? 'circle(120px at var(--mx) var(--my))' : 'none'
                 }}
+                aria-hidden={viewMode === 'both'}
             >
                 {renderContent(true)}
             </div>

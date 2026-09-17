@@ -4,8 +4,8 @@ import { motion } from 'framer-motion';
 const education = [
     {
         year: '2022 — 2026',
-        degree: 'B.Tech in Computer Science Engineering-Artificial Intelligence and Machine Learning',
-        institution: 'Dayanand Sagar University',
+        degree: 'B.Tech in Computer Science Engineering — Artificial Intelligence and Machine Learning',
+        institution: 'Dayananda Sagar University',
         details: 'Specialization in AI & Machine Learning',
         cgpa: '8.16',
     },

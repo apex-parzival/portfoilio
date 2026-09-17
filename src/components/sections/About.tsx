@@ -5,18 +5,18 @@ import type { ViewMode } from '../../App';
 // Layer 1: Backend Engineer (Cream text)
 const textLayer1 = (
     <>
-        I’m <span className="text-accent font-bold not-italic">Mohammed Yaseen Sutar</span>, a backend engineer who enjoys designing clean, scalable systems that power modern applications. I build robust RESTful APIs, design reliable data models, and focus on performance, security, and maintainability.
+        I’m <span className="text-accent font-bold not-italic">Mohammed Yaseen Sutar</span>, a backend engineer who designs the systems everything else gets built on. Async APIs, data models that hold up under real load, and the unglamorous parts done properly — auth and token rotation, multi-tenant isolation, rate limiting, migrations that don’t lose rows.
         <br /><br />
-        My approach to backend development is product-driven. I think in terms of system architecture, clear contracts between services, and building foundations that teams can scale on. From authentication flows to database design and API integrations, I enjoy creating the infrastructure that quietly makes everything else work.
+        Most of what I shipped this year went to real clients: a gateway translating legacy hospital messaging into a national health platform’s format, a multi-tenant attendance backend enforcing row-level security over children’s biometric data, a reverse-auction engine where concurrent bids had to settle deterministically. I’d rather the infrastructure be boring and the product be interesting.
     </>
 );
 
 // Layer 2: AI/ML Engineer (Black text on Orange bg)
 const textLayer2 = (
     <>
-        I’m <span className="font-bold not-italic">Mohammed Yaseen Sutar</span>, an AI/ML engineer focused on building intelligent systems that work beyond notebooks and demos. My work spans computer vision and NLP, where I design end-to-end pipelines from data collection and preprocessing to model training, evaluation, and deployment.
+        I’m <span className="font-bold not-italic">Mohammed Yaseen Sutar</span>, an AI/ML engineer who builds intelligent systems that survive contact with real data. My work runs from computer vision and NLP through to LLM and agentic pipelines — retrieval, embeddings, evaluation, and the deployment story a notebook never has to answer for.
         <br /><br />
-        I enjoy working with real-world, imperfect data and turning it into models that deliver measurable impact. Whether it’s predicting genetic mutations from clinical text or estimating elephant weight from images, I care about building ML systems that are reliable, scalable, and ready for production.
+        I’ve built a multi-agent sourcing pipeline that researches and contacts suppliers on its own, an embedding-plus-LLM-judge engine that catches bill-of-materials errors before they reach the factory floor, and a face-recognition attendance system tuned so a close second match downgrades instead of silently auto-accepting. The interesting work is always in the failure cases.
     </>
 );
 
@@ -45,8 +45,8 @@ export const About = ({ viewMode }: { viewMode: ViewMode }) => {
                         A B O U T &nbsp; M E
                     </p>
 
-                    <div className="max-w-6xl">
-                        <p className={`text-[clamp(1.25rem,2.5vw,2.5rem)] font-medium leading-[1.6] tracking-tight ${isReveal ? 'text-[#0a0a0a]' : 'text-cream'
+                    <div className="max-w-4xl">
+                        <p className={`text-[clamp(1rem,1.35vw,1.4rem)] font-medium leading-[1.7] tracking-tight ${isReveal ? 'text-[#0a0a0a]' : 'text-cream'
                             }`}>
                             {isReveal ? textLayer2 : textLayer1}
                         </p>
@@ -85,6 +85,7 @@ export const About = ({ viewMode }: { viewMode: ViewMode }) => {
                 style={{
                     clipPath: viewMode === 'both' ? 'circle(200px at var(--mx) var(--my))' : 'none'
                 }}
+                aria-hidden={viewMode === 'both'}
             >
                 {renderContent(true)}
             </div>

@@ -4,6 +4,7 @@ import { AnimatePresence } from 'framer-motion';
 import { Navbar } from './components/layout/Navbar';
 import { Background } from './components/layout/Background';
 import { CustomCursor } from './components/ui/CustomCursor';
+import { ScrollProgress } from './components/ui/ScrollProgress';
 import { SideBar } from './components/layout/SideBar';
 import { Hero } from './components/sections/Hero';
 import { Education } from './components/sections/Education';
@@ -22,22 +23,36 @@ function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('both');
 
   useEffect(() => {
+    // Smooth scroll is a flourish, not a feature — skip it entirely for anyone
+    // who has asked the OS to reduce motion.
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     });
 
+    let frame = 0;
     function raf(time: number) {
       lenis.raf(time);
-      requestAnimationFrame(raf);
+      frame = requestAnimationFrame(raf);
     }
 
-    requestAnimationFrame(raf);
+    frame = requestAnimationFrame(raf);
 
     return () => {
+      cancelAnimationFrame(frame);
       lenis.destroy();
     };
   }, []);
+
+  // Keep the page from scrolling behind the loading overlay.
+  useEffect(() => {
+    document.body.style.overflow = loading ? 'hidden' : '';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [loading]);
 
   const handleSelectMode = (mode: ViewMode) => {
     setViewMode(mode);
@@ -45,7 +60,7 @@ function App() {
   };
 
   return (
-    <div className="bg-background text-foreground min-h-screen cursor-none">
+    <div className="bg-background text-foreground min-h-screen">
       <CustomCursor />
 
       <AnimatePresence mode="wait">
@@ -54,6 +69,14 @@ function App() {
 
       {!loading && (
         <>
+          <a
+            href="#about"
+            className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-full focus:bg-accent focus:text-[#0a0a0a] focus:text-sm focus:font-bold"
+          >
+            Skip to content
+          </a>
+
+          <ScrollProgress />
           <Background />
           <Navbar />
           <SideBar />
