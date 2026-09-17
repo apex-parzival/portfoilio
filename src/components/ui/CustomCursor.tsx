@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { motion, useMotionValue, useReducedMotion, useSpring } from 'framer-motion';
+import { motion, useMotionValue, useSpring } from 'framer-motion';
 
 type CursorMode = 'idle' | 'engulf' | 'hidden' | 'lens';
 
@@ -20,17 +20,20 @@ export const CustomCursor = () => {
     const [mode, setMode] = useState<CursorMode>('idle');
     const [lensRadius, setLensRadius] = useState(DEFAULT_LENS_RADIUS);
 
-    const reduceMotion = useReducedMotion();
-
     const x = useMotionValue(-100);
     const y = useMotionValue(-100);
-    // Near-instant follow when reduced motion is requested: the cursor still
-    // works, it just stops trailing behind the pointer.
-    const springConfig = reduceMotion
-        ? { stiffness: 10000, damping: 100, mass: 0.1 }
-        : { stiffness: 1400, damping: 70, mass: 0.3 };
-    const springX = useSpring(x, springConfig);
-    const springY = useSpring(y, springConfig);
+
+    // Tuned to reproduce the original `tween / backOut / 0.12s` follow: a short
+    // visible trail with a slight overshoot. Damping ratio here is ~0.89, i.e.
+    // just underdamped — the earlier 1400/70/0.3 spring was overdamped (~1.7)
+    // and felt rigid by comparison.
+    //
+    // Deliberately NOT branched on prefers-reduced-motion. A cursor trailing by
+    // ~120ms is not the kind of motion that setting is protecting against, and
+    // branching on it flattened the cursor entirely on machines that report it.
+    // The magnetic contact buttons and Lenis smooth scroll still honour it.
+    const springX = useSpring(x, { stiffness: 500, damping: 28, mass: 0.5 });
+    const springY = useSpring(y, { stiffness: 500, damping: 28, mass: 0.5 });
 
     // Only enable for fine pointers, and drop out if the user plugs in / switches
     // to a touch device mid-session.
@@ -120,7 +123,7 @@ export const CustomCursor = () => {
                     opacity: mode === 'hidden' ? 0 : 1,
                 }}
                 initial={false}
-                transition={{ type: 'tween', ease: 'backOut', duration: reduceMotion ? 0 : 0.25 }}
+                transition={{ type: 'tween', ease: 'backOut', duration: mode === 'idle' ? 0.12 : 0.25 }}
             />
         </motion.div>,
         document.body
