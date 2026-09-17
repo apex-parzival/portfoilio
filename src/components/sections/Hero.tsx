@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import type { ViewMode } from '../../App';
 
 const heroWords = [
@@ -14,10 +14,9 @@ const taglines = {
 
 export const Hero = ({ viewMode }: { viewMode: ViewMode }) => {
     const sectionRef = useRef<HTMLDivElement>(null);
-    const reduceMotion = useReducedMotion();
 
     const handleMouseMove = (e: React.MouseEvent) => {
-        if (reduceMotion || !sectionRef.current || viewMode !== 'both') return;
+        if (!sectionRef.current || viewMode !== 'both') return;
         const rect = sectionRef.current.getBoundingClientRect();
         sectionRef.current.style.setProperty('--mx', `${e.clientX - rect.left}px`);
         sectionRef.current.style.setProperty('--my', `${e.clientY - rect.top}px`);
@@ -100,6 +99,7 @@ export const Hero = ({ viewMode }: { viewMode: ViewMode }) => {
             onMouseLeave={handleMouseLeave}
             className="relative overflow-hidden"
             style={{ '--mx': '-200px', '--my': '-200px' } as React.CSSProperties}
+            data-cursor-lens={viewMode === 'both' ? 120 : undefined}
         >
             {/* ─── Front Layer (Layer 1: Backend) ─── */}
             {/* Show if mode is NOT ai_ml-only (i.e. show for Backend and Both) */}

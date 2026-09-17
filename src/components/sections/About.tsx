@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { SectionLabel } from '../ui/SectionLabel';
 import type { ViewMode } from '../../App';
 
@@ -23,10 +23,9 @@ const textLayer2 = (
 
 export const About = ({ viewMode }: { viewMode: ViewMode }) => {
     const sectionRef = useRef<HTMLDivElement>(null);
-    const reduceMotion = useReducedMotion();
 
     const handleMouseMove = (e: React.MouseEvent) => {
-        if (reduceMotion || !sectionRef.current || viewMode !== 'both') return;
+        if (!sectionRef.current || viewMode !== 'both') return;
         const rect = sectionRef.current.getBoundingClientRect();
         sectionRef.current.style.setProperty('--mx', `${e.clientX - rect.left}px`);
         sectionRef.current.style.setProperty('--my', `${e.clientY - rect.top}px`);
@@ -65,6 +64,7 @@ export const About = ({ viewMode }: { viewMode: ViewMode }) => {
             onMouseLeave={handleMouseLeave}
             className="relative overflow-hidden"
             style={{ '--mx': '-200px', '--my': '-200px' } as React.CSSProperties}
+            data-cursor-lens={viewMode === 'both' ? 200 : undefined}
         >
             {/* ─── Front Layer (Layer 1: Backend) ─── */}
             <div className={`relative z-10 ${viewMode === 'view_ai_ml' ? 'opacity-0' : 'opacity-100'}`}>

@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import type { ViewMode } from '../../App';
 import { SectionLabel } from '../ui/SectionLabel';
 
@@ -39,10 +39,9 @@ const skills = [
 export const Skills = ({ viewMode }: { viewMode: ViewMode }) => {
     const sectionRef = useRef<HTMLDivElement>(null);
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-    const reduceMotion = useReducedMotion();
 
     const handleMouseMove = (e: React.MouseEvent) => {
-        if (reduceMotion || !sectionRef.current) return;
+        if (!sectionRef.current) return;
         const rect = sectionRef.current.getBoundingClientRect();
         sectionRef.current.style.setProperty('--mx', `${e.clientX - rect.left}px`);
         sectionRef.current.style.setProperty('--my', `${e.clientY - rect.top}px`);
@@ -147,6 +146,7 @@ export const Skills = ({ viewMode }: { viewMode: ViewMode }) => {
             onMouseLeave={handleMouseLeave}
             className="relative overflow-hidden"
             style={{ '--mx': '-200px', '--my': '-200px' } as React.CSSProperties}
+            data-cursor-lens={viewMode === 'both' ? 120 : undefined}
         >
             {/* ─── Front Layer ─── */}
             <div className="relative z-10">{renderList(false)}</div>
@@ -154,7 +154,7 @@ export const Skills = ({ viewMode }: { viewMode: ViewMode }) => {
             {/* ─── Reveal Layer ─── */}
             <div
                 className={`absolute inset-0 z-20 bg-accent pointer-events-none transition-opacity duration-300
-                    ${viewMode === 'view_backend' ? '!hidden' : reduceMotion ? 'hidden' : 'hidden md:block'}
+                    ${viewMode === 'view_backend' ? '!hidden' : 'hidden md:block'}
                     ${viewMode === 'view_ai_ml' ? '!block opacity-100' : ''}
                     ${hoveredIndex !== null && viewMode === 'both' ? 'opacity-0' : 'opacity-100'}`}
                 style={{

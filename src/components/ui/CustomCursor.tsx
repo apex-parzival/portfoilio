@@ -2,7 +2,10 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, useMotionValue, useReducedMotion, useSpring } from 'framer-motion';
 
-type CursorMode = 'idle' | 'engulf' | 'hidden';
+type CursorMode = 'idle' | 'engulf' | 'hidden' | 'lens';
+
+/** Fallback lens radius if a section forgets to declare one. */
+const DEFAULT_LENS_RADIUS = 120;
 
 /**
  * Pointer-following cursor.
@@ -15,6 +18,7 @@ type CursorMode = 'idle' | 'engulf' | 'hidden';
 export const CustomCursor = () => {
     const [enabled, setEnabled] = useState(false);
     const [mode, setMode] = useState<CursorMode>('idle');
+    const [lensRadius, setLensRadius] = useState(DEFAULT_LENS_RADIUS);
 
     const reduceMotion = useReducedMotion();
 
@@ -61,7 +65,16 @@ export const CustomCursor = () => {
                 return;
             }
 
-            // Priority 2: engulf (cards, buttons, links, interactive)
+            // Priority 2: lens — a section with a spotlight reveal underneath.
+            const lens = target.closest<HTMLElement>('[data-cursor-lens]');
+            if (lens) {
+                const radius = Number(lens.dataset.cursorLens);
+                setLensRadius(Number.isFinite(radius) && radius > 0 ? radius : DEFAULT_LENS_RADIUS);
+                setMode('lens');
+                return;
+            }
+
+            // Priority 3: engulf (cards, buttons, links, interactive)
             if (
                 target.closest('[data-cursor-engulf]') ||
                 target.closest('a') ||
@@ -89,7 +102,9 @@ export const CustomCursor = () => {
 
     if (!enabled) return null;
 
-    const size = mode === 'engulf' ? 80 : 12;
+    const isLens = mode === 'lens';
+    // Match the reveal radius exactly, so the ring outlines what is uncovered.
+    const size = isLens ? lensRadius * 2 : mode === 'engulf' ? 80 : 12;
 
     return createPortal(
         <motion.div
@@ -97,7 +112,8 @@ export const CustomCursor = () => {
             style={{ x: springX, y: springY }}
         >
             <motion.div
-                className="rounded-full bg-accent -translate-x-1/2 -translate-y-1/2"
+                className={`rounded-full -translate-x-1/2 -translate-y-1/2 ${isLens ? 'border-2 border-cream/50 bg-transparent' : 'bg-accent'
+                    }`}
                 animate={{
                     width: size,
                     height: size,
