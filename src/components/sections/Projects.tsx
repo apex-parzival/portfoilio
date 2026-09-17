@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { projectCategories, projects } from '../../data/projects';
+import { Link } from 'react-router-dom';
+import { SectionLabel } from '../ui/SectionLabel';
+import { orderedProjects, projectCategories, projects } from '../../data/projects';
 import type { ProjectCategory } from '../../data/projects';
 
 export const Projects = () => {
@@ -9,7 +11,10 @@ export const Projects = () => {
     const [expanded, setExpanded] = useState<string | null>(null);
 
     const visible = useMemo(
-        () => (filter === 'All' ? projects : projects.filter((p) => p.category.includes(filter))),
+        () =>
+            filter === 'All'
+                ? orderedProjects
+                : orderedProjects.filter((p) => p.category.includes(filter)),
         [filter]
     );
 
@@ -18,21 +23,13 @@ export const Projects = () => {
     return (
         <section id="projects" className="py-32 px-8 md:px-12 lg:px-20">
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
-                <motion.p
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.8 }}
-                    className="text-cream/60 text-xs tracking-[0.4em] uppercase"
-                >
-                    P R O J E C T S
-                </motion.p>
+                <SectionLabel className="text-cream/80">Projects</SectionLabel>
                 <motion.p
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.8, delay: 0.1 }}
-                    className="text-xs font-mono text-foreground/30"
+                    className="text-xs font-mono text-muted"
                 >
                     {projects.length} selected · {clientCount} shipped for clients
                 </motion.p>
@@ -65,7 +62,7 @@ export const Projects = () => {
                             }}
                             className={`px-4 py-2 rounded-full border text-xs tracking-widest uppercase transition-colors duration-300 ${active
                                 ? 'bg-accent border-accent text-[#0a0a0a] font-bold'
-                                : 'border-white/15 text-foreground/50 hover:border-accent/50 hover:text-accent'
+                                : 'border-white/15 text-muted hover:border-accent/50 hover:text-accent'
                                 }`}
                             data-cursor-hide
                         >
@@ -113,7 +110,7 @@ export const Projects = () => {
                                     <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] md:items-center gap-3 md:gap-10">
                                         <div className="min-w-0">
                                             <span
-                                                className={`text-[10px] md:text-[11px] tracking-[0.25em] uppercase block mb-2 transition-colors duration-300 ${isHovered && !isOpen ? 'text-[#0a0a0a]/50' : 'text-accent/70'
+                                                className={`text-[10px] md:text-[11px] tracking-[0.25em] uppercase block mb-2 transition-colors duration-300 ${isHovered && !isOpen ? 'text-[#0a0a0a]/60' : 'text-accent'
                                                     }`}
                                             >
                                                 {project.reveal}
@@ -129,20 +126,20 @@ export const Projects = () => {
                                         <div className="min-w-0 flex items-start gap-6 md:justify-end">
                                             <div className="min-w-0 flex-1 md:text-right">
                                                 <span
-                                                    className={`text-sm block transition-colors duration-300 ${isHovered && !isOpen ? 'text-[#0a0a0a]/70' : 'text-foreground/40'
+                                                    className={`text-sm block transition-colors duration-300 ${isHovered && !isOpen ? 'text-[#0a0a0a]/80' : 'text-muted'
                                                         }`}
                                                 >
                                                     {project.desc}
                                                 </span>
                                                 <span
-                                                    className={`text-xs font-mono mt-1 block transition-colors duration-300 ${isHovered && !isOpen ? 'text-[#0a0a0a]/50' : 'text-foreground/25'
+                                                    className={`text-xs font-mono mt-1 block transition-colors duration-300 ${isHovered && !isOpen ? 'text-[#0a0a0a]/60' : 'text-faint'
                                                         }`}
                                                 >
                                                     {project.org} · {project.year}
                                                 </span>
                                             </div>
                                             <span
-                                                className={`text-sm font-mono shrink-0 transition-all duration-300 ${isHovered && !isOpen ? 'text-[#0a0a0a]/50' : 'text-foreground/20'
+                                                className={`text-sm font-mono shrink-0 transition-all duration-300 ${isHovered && !isOpen ? 'text-[#0a0a0a]/60' : 'text-faint'
                                                     } ${isOpen ? 'rotate-45' : ''}`}
                                                 aria-hidden="true"
                                             >
@@ -176,14 +173,14 @@ export const Projects = () => {
 
                                                 <div className="space-y-6">
                                                     <div>
-                                                        <p className="text-[10px] tracking-[0.3em] uppercase text-foreground/30 mb-3">
+                                                        <p className="text-[10px] tracking-[0.3em] uppercase text-muted mb-3">
                                                             Stack
                                                         </p>
                                                         <div className="flex flex-wrap gap-2">
                                                             {project.tech.map((t) => (
                                                                 <span
                                                                     key={t}
-                                                                    className="px-3 py-1 rounded-full border border-white/10 text-xs font-mono text-foreground/50"
+                                                                    className="px-3 py-1 rounded-full border border-white/10 text-xs font-mono text-muted"
                                                                 >
                                                                     {t}
                                                                 </span>
@@ -191,7 +188,7 @@ export const Projects = () => {
                                                         </div>
                                                     </div>
                                                     <div>
-                                                        <p className="text-[10px] tracking-[0.3em] uppercase text-foreground/30 mb-2">
+                                                        <p className="text-[10px] tracking-[0.3em] uppercase text-muted mb-2">
                                                             Type
                                                         </p>
                                                         <p className="text-sm text-accent">
@@ -202,6 +199,13 @@ export const Projects = () => {
                                                             {project.category.join(', ')}
                                                         </p>
                                                     </div>
+
+                                                    <Link
+                                                        to={'/projects/' + project.slug}
+                                                        className="inline-block px-5 py-2.5 rounded-full border border-accent/50 text-accent text-xs font-bold tracking-widest uppercase hover:bg-accent hover:text-[#0a0a0a] transition-colors duration-300"
+                                                    >
+                                                        Full case study &rarr;
+                                                    </Link>
                                                 </div>
                                             </div>
                                         </motion.div>
@@ -214,7 +218,7 @@ export const Projects = () => {
                 <div className="border-t border-white/10" />
             </div>
 
-            <p className="mt-8 text-xs text-foreground/25">
+            <p className="mt-8 text-xs text-faint">
                 Client repositories are private — happy to walk through architecture and code on a call.
             </p>
         </section>

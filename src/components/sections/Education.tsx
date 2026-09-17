@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { SectionLabel } from '../ui/SectionLabel';
 import { motion } from 'framer-motion';
 
 const education = [
@@ -30,15 +31,7 @@ export const Education = () => {
 
     return (
         <section id="education" className="py-32 px-8 md:px-12 lg:px-20">
-            <motion.p
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8 }}
-                className="text-cream/60 text-xs tracking-[0.4em] uppercase mb-16"
-            >
-                E D U C A T I O N
-            </motion.p>
+            <SectionLabel className="text-cream/80 mb-16">Education</SectionLabel>
 
             <div>
                 {education.map((edu, i) => (
@@ -66,7 +59,7 @@ export const Education = () => {
                                     }`}>
                                     {edu.degree}
                                 </h3>
-                                <p className={`text-sm mt-1 transition-colors duration-300 ${hoveredIndex === i ? 'text-[#0a0a0a]/60' : 'text-foreground/40'
+                                <p className={`text-sm mt-1 transition-colors duration-300 ${hoveredIndex === i ? 'text-[#0a0a0a]/80' : 'text-muted'
                                     }`}>
                                     {edu.institution}
                                 </p>
@@ -76,7 +69,7 @@ export const Education = () => {
                                     }`}>
                                     {edu.cgpa ? `CGPA: ${edu.cgpa}` : `Score: ${edu.percentage}`}
                                 </p>
-                                <p className={`text-sm transition-colors duration-300 ${hoveredIndex === i ? 'text-[#0a0a0a]/60' : 'text-foreground/30'
+                                <p className={`text-sm transition-colors duration-300 ${hoveredIndex === i ? 'text-[#0a0a0a]/80' : 'text-muted'
                                     }`}>
                                     {edu.details}
                                 </p>

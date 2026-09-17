@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://portfoilio-yaseen.vercel.app/sitemap.xml

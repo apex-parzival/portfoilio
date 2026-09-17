@@ -1,4 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+/* Self-hosted Inter: no third-party request, no render-blocking @import chain,
+   and no flash of fallback text on first paint. */
+/* Only the weights the UI actually uses: normal, medium, bold, black. */
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/700.css';
+@import '@fontsource/inter/900.css';
 
 @tailwind base;
 @tailwind components;

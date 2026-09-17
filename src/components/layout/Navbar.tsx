@@ -1,12 +1,17 @@
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { navLinks, profile, sectionIds } from "../../data/profile";
 import { useActiveSection } from "../../hooks/useActiveSection";
 import { scrollToId, scrollToTop } from "../../lib/scroll";
+import { useFocusTrap } from "../../hooks/useFocusTrap";
 
 export const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const active = useActiveSection(sectionIds);
+    const overlayRef = useRef<HTMLDivElement>(null);
+    const closeMenu = useCallback(() => setIsOpen(false), []);
+
+    useFocusTrap(overlayRef, isOpen, closeMenu);
 
     const handleScroll = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
         e.preventDefault();
@@ -87,6 +92,7 @@ export const Navbar = () => {
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
+                        ref={overlayRef}
                         initial={{ clipPath: 'circle(0% at calc(100% - 2rem) 2rem)' }}
                         animate={{ clipPath: 'circle(150% at calc(100% - 2rem) 2rem)' }}
                         exit={{ clipPath: 'circle(0% at calc(100% - 2rem) 2rem)' }}

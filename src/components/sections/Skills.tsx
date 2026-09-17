@@ -1,5 +1,7 @@
 import { useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
+import type { ViewMode } from '../../App';
+import { SectionLabel } from '../ui/SectionLabel';
 
 const skills = [
     {
@@ -34,12 +36,13 @@ const skills = [
     },
 ];
 
-export const Skills = () => {
+export const Skills = ({ viewMode }: { viewMode: ViewMode }) => {
     const sectionRef = useRef<HTMLDivElement>(null);
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+    const reduceMotion = useReducedMotion();
 
     const handleMouseMove = (e: React.MouseEvent) => {
-        if (!sectionRef.current) return;
+        if (reduceMotion || !sectionRef.current) return;
         const rect = sectionRef.current.getBoundingClientRect();
         sectionRef.current.style.setProperty('--mx', `${e.clientX - rect.left}px`);
         sectionRef.current.style.setProperty('--my', `${e.clientY - rect.top}px`);
@@ -54,12 +57,9 @@ export const Skills = () => {
 
     const renderList = (isReveal: boolean) => (
         <div className="py-32 px-8 md:px-12 lg:px-20">
-            <p
-                className={`text-xs tracking-[0.4em] uppercase mb-16 ${isReveal ? 'text-[#0a0a0a]/60' : 'text-cream/60'
-                    }`}
-            >
-                {isReveal ? 'E X P E R T I S E' : 'S K I L L S'}
-            </p>
+            <SectionLabel className={`mb-16 ${isReveal ? 'text-[#0a0a0a]/80' : 'text-cream/80'}`}>
+                {isReveal ? 'Expertise' : 'Skills'}
+            </SectionLabel>
 
             <div>
                 {skills.map((skill, i) => {
@@ -78,7 +78,7 @@ export const Skills = () => {
                             <div className="min-w-0 flex items-start gap-6 md:justify-end">
                                 <div className="min-w-0 flex-1 md:text-right">
                                     <span
-                                        className={`text-sm block transition-colors duration-300 ${dark ? 'text-[#0a0a0a]/60' : 'text-foreground/40'
+                                        className={`text-sm block transition-colors duration-300 ${dark ? 'text-[#0a0a0a]/80' : 'text-muted'
                                             }`}
                                     >
                                         {skill.desc}
@@ -88,8 +88,8 @@ export const Skills = () => {
                                             <span
                                                 key={t}
                                                 className={`px-2.5 py-1 rounded-full border text-[11px] font-mono transition-colors duration-300 ${dark
-                                                    ? 'border-[#0a0a0a]/25 text-[#0a0a0a]/60'
-                                                    : 'border-white/10 text-foreground/35'
+                                                    ? 'border-[#0a0a0a]/25 text-[#0a0a0a]/80'
+                                                    : 'border-white/10 text-muted'
                                                     }`}
                                             >
                                                 {t}
@@ -98,7 +98,7 @@ export const Skills = () => {
                                     </div>
                                 </div>
                                 <span
-                                    className={`text-sm font-mono shrink-0 transition-colors duration-300 ${dark ? 'text-[#0a0a0a]/40' : 'text-foreground/15'
+                                    className={`text-sm font-mono shrink-0 transition-colors duration-300 ${dark ? 'text-[#0a0a0a]/60' : 'text-faint'
                                         }`}
                                 >
                                     0{i + 1}
@@ -153,13 +153,24 @@ export const Skills = () => {
 
             {/* ─── Reveal Layer ─── */}
             <div
-                className={`absolute inset-0 z-20 bg-accent pointer-events-none hidden md:block motion-reduce:!hidden transition-opacity duration-300 ${hoveredIndex !== null ? 'opacity-0' : 'opacity-100'
-                    }`}
-                style={{ clipPath: 'circle(120px at var(--mx) var(--my))' }}
-                aria-hidden="true"
+                className={`absolute inset-0 z-20 bg-accent pointer-events-none transition-opacity duration-300
+                    ${viewMode === 'view_backend' ? '!hidden' : reduceMotion ? 'hidden' : 'hidden md:block'}
+                    ${viewMode === 'view_ai_ml' ? '!block opacity-100' : ''}
+                    ${hoveredIndex !== null && viewMode === 'both' ? 'opacity-0' : 'opacity-100'}`}
+                style={{
+                    clipPath: viewMode === 'both' ? 'circle(120px at var(--mx) var(--my))' : 'none',
+                }}
+                aria-hidden={viewMode === 'both'}
             >
                 {renderList(true)}
             </div>
+
+            {/* Mobile fallback for AI & ML mode */}
+            {viewMode === 'view_ai_ml' && (
+                <div className="absolute inset-0 z-30 bg-accent md:hidden">
+                    {renderList(true)}
+                </div>
+            )}
         </section>
     );
 };

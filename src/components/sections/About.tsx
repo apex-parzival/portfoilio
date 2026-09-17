@@ -1,5 +1,6 @@
 import { useRef } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
+import { SectionLabel } from '../ui/SectionLabel';
 import type { ViewMode } from '../../App';
 
 // Layer 1: Backend Engineer (Cream text)
@@ -22,9 +23,10 @@ const textLayer2 = (
 
 export const About = ({ viewMode }: { viewMode: ViewMode }) => {
     const sectionRef = useRef<HTMLDivElement>(null);
+    const reduceMotion = useReducedMotion();
 
     const handleMouseMove = (e: React.MouseEvent) => {
-        if (!sectionRef.current || viewMode !== 'both') return;
+        if (reduceMotion || !sectionRef.current || viewMode !== 'both') return;
         const rect = sectionRef.current.getBoundingClientRect();
         sectionRef.current.style.setProperty('--mx', `${e.clientX - rect.left}px`);
         sectionRef.current.style.setProperty('--my', `${e.clientY - rect.top}px`);
@@ -40,10 +42,9 @@ export const About = ({ viewMode }: { viewMode: ViewMode }) => {
         return (
             <div className="py-24 md:py-32 px-8 md:px-12 lg:px-20 relative min-h-screen flex flex-col justify-center">
                 <div className="relative z-10">
-                    <p className={`text-xs tracking-[0.4em] uppercase mb-12 ${isReveal ? 'text-[#0a0a0a]/60' : 'text-accent'
-                        }`}>
-                        A B O U T &nbsp; M E
-                    </p>
+                    <SectionLabel className={`mb-12 ${isReveal ? 'text-[#0a0a0a]/80' : 'text-accent'}`}>
+                        About me
+                    </SectionLabel>
 
                     <div className="max-w-4xl">
                         <p className={`text-[clamp(1rem,1.35vw,1.4rem)] font-medium leading-[1.7] tracking-tight ${isReveal ? 'text-[#0a0a0a]' : 'text-cream'

@@ -2,6 +2,10 @@ export type ProjectCategory = 'AI & ML' | 'Backend' | 'Full-Stack' | 'Web3' | 'E
 export type ProjectContext = 'Client' | 'Academic';
 
 export interface Project {
+    /** URL segment for /projects/:slug — must stay stable, it's a public link. */
+    slug: string;
+    /** Surfaced first under the "All" filter. */
+    featured?: boolean;
     /** Backend-layer title (front layer) */
     title: string;
     /** AI/ML-layer title (reveal layer) */
@@ -23,6 +27,8 @@ export interface Project {
  */
 export const projects: Project[] = [
     {
+        slug: 'bom-error-reduction',
+        featured: true,
         title: 'BOM ERROR REDUCTION',
         reveal: 'AI BILL-OF-MATERIALS ENGINE',
         desc: 'AI platform that generates and validates machine-specific Bills of Materials, replacing an error-prone manual ERP process',
@@ -38,6 +44,8 @@ export const projects: Project[] = [
         tech: ['Python', 'FastAPI', 'Next.js', 'Gemini', 'Embeddings', 'Vector Search', 'TypeScript'],
     },
     {
+        slug: 'supplier-scout',
+        featured: true,
         title: 'SUPPLIER SCOUT',
         reveal: 'MULTI-AGENT SOURCING PIPELINE',
         desc: 'Agentic procurement engine that finds, verifies and contacts suppliers for a part from a single plain-English request',
@@ -53,6 +61,8 @@ export const projects: Project[] = [
         tech: ['Python', 'FastAPI', 'PostgreSQL', 'Gemini', 'Playwright', 'SSE', 'Next.js'],
     },
     {
+        slug: 'attendance-system',
+        featured: true,
         title: 'ATTENDANCE SYSTEM',
         reveal: 'FACE RECOGNITION AT SCHOOL SCALE',
         desc: 'Face-recognition attendance platform for a government school pilot, designed to scale to an entire district as config, not a rebuild',
@@ -68,6 +78,8 @@ export const projects: Project[] = [
         tech: ['Python', 'FastAPI', 'PostgreSQL', 'InsightFace', 'React', 'PWA', 'AWS', 'Docker'],
     },
     {
+        slug: 'hl7-fhir-gateway',
+        featured: true,
         title: 'HL7 → FHIR GATEWAY',
         reveal: 'HEALTHCARE INTEROPERABILITY BRIDGE',
         desc: 'Translation service bridging 1980s hospital messaging formats to a modern national health-insurance platform',
@@ -83,6 +95,8 @@ export const projects: Project[] = [
         tech: ['Python', 'FastAPI', 'HL7 v2', 'FHIR R4', 'Redis', 'Docker', 'Kubernetes'],
     },
     {
+        slug: 'weconnect',
+        featured: true,
         title: 'WECONNECT',
         reveal: 'E-WASTE REVERSE AUCTION PLATFORM',
         desc: 'B2B e-waste aggregation platform running sealed and live reverse auctions between corporates and certified recyclers',
@@ -98,6 +112,8 @@ export const projects: Project[] = [
         tech: ['Next.js', 'TypeScript', 'Firebase', 'Firestore', 'AWS Amplify'],
     },
     {
+        slug: 'prior-auth-automation',
+        featured: true,
         title: 'PRIOR-AUTH AUTOMATION',
         reveal: 'CLINICAL DOCUMENT EXTRACTION',
         desc: 'Desktop app that reads referral PDFs, extracts clinical fields with an LLM and maps them to billing codes',
@@ -113,6 +129,7 @@ export const projects: Project[] = [
         tech: ['Python', 'FastAPI', 'AWS Bedrock', 'S3', 'Electron', 'React'],
     },
     {
+        slug: 'property-hub',
         title: 'PROPERTY HUB',
         reveal: 'GEOSPATIAL PROPERTY DISCOVERY',
         desc: 'Real-estate platform with map-driven listings and automated neighbourhood amenity discovery',
@@ -128,6 +145,7 @@ export const projects: Project[] = [
         tech: ['Next.js', 'TypeScript', 'Prisma', 'Supabase', 'Google Maps', 'AWS Amplify'],
     },
     {
+        slug: 'fleet-console',
         title: 'FLEET CONSOLE',
         reveal: 'IOT SMART-GLASSES OPERATIONS',
         desc: 'Operations console previewing an AWS IoT platform for a smart-glasses fleet: telemetry, media and alerts',
@@ -143,6 +161,7 @@ export const projects: Project[] = [
         tech: ['React', 'Vite', 'TypeScript', 'Tailwind', 'Serverless', 'Gemini'],
     },
     {
+        slug: 'rail-intelligence',
         title: 'RAIL INTELLIGENCE',
         reveal: 'PREDICTIVE RAIL OPERATIONS',
         desc: 'Enterprise rail operations POC covering predictive maintenance, defect detection and dynamic routing',
@@ -158,6 +177,7 @@ export const projects: Project[] = [
         tech: ['Next.js', 'TypeScript', 'Turborepo', 'Computer Vision', 'Predictive Analytics'],
     },
     {
+        slug: 'mediaforge',
         title: 'MEDIAFORGE',
         reveal: 'GENERATIVE CREATIVE STUDIO',
         desc: 'AI creative studio for social teams — generate text, images and video, edit on canvas, then schedule it',
@@ -173,6 +193,7 @@ export const projects: Project[] = [
         tech: ['Next.js', 'TypeScript', 'Gemini', 'PostgreSQL', 'better-auth', 'Framer Motion'],
     },
     {
+        slug: 'traventions',
         title: 'TRAVENTIONS',
         reveal: 'GDS FLIGHT BOOKING ENGINE',
         desc: 'Flight booking and travel-management platform built on enterprise GDS inventory for travel consultants',
@@ -188,6 +209,7 @@ export const projects: Project[] = [
         tech: ['Next.js', 'TypeScript', 'Amadeus GDS', 'Zustand', 'TanStack Query', 'Mapbox'],
     },
     {
+        slug: 'ai-recruiter',
         title: 'AI RECRUITER',
         reveal: 'AUTOMATED HIRING PIPELINE',
         desc: 'Recruitment platform automating resume screening, interview assistance and candidate assessment',
@@ -203,6 +225,7 @@ export const projects: Project[] = [
         tech: ['Python', 'FastAPI', 'NLP', 'React', 'Browser Extension'],
     },
     {
+        slug: 'collision-centre',
         title: 'COLLISION CENTRE',
         reveal: '3D AUTOMOTIVE EXPERIENCE',
         desc: 'Brand site for a Canadian auto body shop, built around interactive 3D vehicle models',
@@ -218,6 +241,7 @@ export const projects: Project[] = [
         tech: ['React', 'Vite', 'Three.js', 'React Router', 'Vercel'],
     },
     {
+        slug: 'echo',
         title: 'ECHO',
         reveal: 'VOICE DICTATION PRODUCT SITE',
         desc: 'Marketing and download site for a system-wide push-to-talk voice dictation desktop app',
@@ -233,6 +257,7 @@ export const projects: Project[] = [
         tech: ['HTML', 'CSS', 'JavaScript', 'Python'],
     },
     {
+        slug: 'binks',
         title: 'BINKS',
         reveal: 'SMART WASTE MANAGEMENT',
         desc: 'AI + blockchain system for waste classification and token-based user incentives',
@@ -248,6 +273,7 @@ export const projects: Project[] = [
         tech: ['Python', 'React', 'Solidity', 'Hardhat', 'MongoDB'],
     },
     {
+        slug: 'abhimanyu',
         title: 'ABHIMANYU',
         reveal: 'ELEPHANT WEIGHT ESTIMATION',
         desc: 'Computer vision system estimating elephant weight from photographs for wildlife conservation',
@@ -263,6 +289,7 @@ export const projects: Project[] = [
         tech: ['Python', 'PyTorch', 'CNNs', 'OpenCV', 'TensorFlow'],
     },
     {
+        slug: 'personalized-medicine',
         title: 'PERSONALIZED MEDICINE',
         reveal: 'GENETIC MUTATION PREDICTION',
         desc: 'NLP deep-learning model predicting genetic mutation classes from clinical literature',
@@ -278,6 +305,7 @@ export const projects: Project[] = [
         tech: ['Python', 'BioBERT', 'Hugging Face', 'PyTorch', 'NLP'],
     },
     {
+        slug: 'boltbox',
         title: 'BOLTBOX',
         reveal: 'AI DEV TOOLKIT',
         desc: 'Full-stack platform to bootstrap projects from templates with AI-suggested tech stacks',
@@ -293,6 +321,7 @@ export const projects: Project[] = [
         tech: ['Next.js', 'TypeScript', 'Tailwind', 'MongoDB'],
     },
     {
+        slug: 'feed-forward',
         title: 'FEED FORWARD',
         reveal: 'CRYPTO FOR FOOD REDISTRIBUTION',
         desc: 'Blockchain incentive system routing surplus food to people who need it',
@@ -308,6 +337,7 @@ export const projects: Project[] = [
         tech: ['Solidity', 'Hardhat', 'Web3.js', 'React'],
     },
     {
+        slug: 'virtual-diary',
         title: 'VIRTUAL DIARY',
         reveal: 'SOCIAL MEMORY PLATFORM',
         desc: 'Collaborative web app for storing memories with friends, groups and shared media',
@@ -323,6 +353,7 @@ export const projects: Project[] = [
         tech: ['React', 'Node.js', 'Express', 'MongoDB'],
     },
     {
+        slug: 'iot-integration',
         title: 'IOT INTEGRATION',
         reveal: '3D CIRCUIT SYSTEM',
         desc: 'ESP32 hardware system integrating multiple sensors with a real-time display',
@@ -347,3 +378,22 @@ export const projectCategories: (ProjectCategory | 'All')[] = [
     'Web3',
     'Embedded',
 ];
+
+/** Featured work first under "All"; declaration order is preserved otherwise. */
+export const orderedProjects: Project[] = [
+    ...projects.filter((p) => p.featured),
+    ...projects.filter((p) => !p.featured),
+];
+
+export const getProjectBySlug = (slug: string): Project | undefined =>
+    projects.find((p) => p.slug === slug);
+
+/** Neighbours in `orderedProjects`, for prev/next links on a detail page. */
+export const getProjectNeighbours = (slug: string) => {
+    const i = orderedProjects.findIndex((p) => p.slug === slug);
+    if (i === -1) return { prev: undefined, next: undefined };
+    return {
+        prev: i > 0 ? orderedProjects[i - 1] : undefined,
+        next: i < orderedProjects.length - 1 ? orderedProjects[i + 1] : undefined,
+    };
+};

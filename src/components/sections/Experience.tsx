@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { SectionLabel } from '../ui/SectionLabel';
 import { motion } from 'framer-motion';
 
 interface Role {
@@ -41,15 +42,7 @@ export const Experience = () => {
 
     return (
         <section id="experience" className="py-32 px-8 md:px-12 lg:px-20">
-            <motion.p
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8 }}
-                className="text-cream/60 text-xs tracking-[0.4em] uppercase mb-16"
-            >
-                E X P E R I E N C E
-            </motion.p>
+            <SectionLabel className="text-cream/80 mb-16">Experience</SectionLabel>
 
             <div>
                 {experiences.map((exp, i) => {
@@ -85,7 +78,7 @@ export const Experience = () => {
                                             {exp.role}
                                         </h3>
                                         <p
-                                            className={`text-sm md:text-base shrink-0 transition-colors duration-300 ${active ? 'text-[#0a0a0a]/70' : 'text-foreground/40'
+                                            className={`text-sm md:text-base shrink-0 transition-colors duration-300 ${active ? 'text-[#0a0a0a]/80' : 'text-muted'
                                                 }`}
                                         >
                                             {exp.company}
@@ -93,7 +86,7 @@ export const Experience = () => {
                                     </div>
 
                                     <p
-                                        className={`text-sm md:text-base leading-relaxed mt-3 max-w-3xl transition-colors duration-300 ${active ? 'text-[#0a0a0a]/70' : 'text-foreground/40'
+                                        className={`text-sm md:text-base leading-relaxed mt-3 max-w-3xl transition-colors duration-300 ${active ? 'text-[#0a0a0a]/80' : 'text-muted'
                                             }`}
                                     >
                                         {exp.summary}
@@ -104,8 +97,8 @@ export const Experience = () => {
                                             <span
                                                 key={t}
                                                 className={`px-3 py-1 rounded-full border text-[11px] font-mono transition-colors duration-300 ${active
-                                                    ? 'border-[#0a0a0a]/25 text-[#0a0a0a]/60'
-                                                    : 'border-white/10 text-foreground/35'
+                                                    ? 'border-[#0a0a0a]/25 text-[#0a0a0a]/80'
+                                                    : 'border-white/10 text-muted'
                                                     }`}
                                             >
                                                 {t}

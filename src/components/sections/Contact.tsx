@@ -1,8 +1,11 @@
 import { useRef } from 'react';
 import type { ComponentType } from 'react';
-import { motion } from 'framer-motion';
+import { SectionLabel } from '../ui/SectionLabel';
+import { motion, useReducedMotion } from 'framer-motion';
 import { profile } from '../../data/profile';
 import { scrollToTop } from '../../lib/scroll';
+import { ContactForm } from '../ui/ContactForm';
+import { isContactFormEnabled } from '../../lib/contact';
 import {
     GitHubIcon,
     InstagramIcon,
@@ -68,9 +71,10 @@ const socials: Social[] = [
 // Magnetic round button
 const MagneticRoundButton = ({ social }: { social: Social }) => {
     const buttonRef = useRef<HTMLAnchorElement>(null);
+    const reduceMotion = useReducedMotion();
 
     const handleMouseMove = (e: React.MouseEvent) => {
-        if (!buttonRef.current) return;
+        if (reduceMotion || !buttonRef.current) return;
         const rect = buttonRef.current.getBoundingClientRect();
         const centerX = rect.left + rect.width / 2;
         const centerY = rect.top + rect.height / 2;
@@ -113,7 +117,7 @@ const MagneticRoundButton = ({ social }: { social: Social }) => {
                 {...(social.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
                 onMouseMove={handleMouseMove}
                 onMouseLeave={handleMouseLeave}
-                className="w-12 h-12 rounded-full border-2 border-white/30 flex items-center justify-center text-foreground/50 hover:bg-accent hover:border-accent hover:text-white hover:shadow-[0_0_20px_rgba(255,77,0,0.4)] transition-all duration-300 motion-reduce:!transform-none"
+                className="w-12 h-12 rounded-full border-2 border-white/30 flex items-center justify-center text-muted hover:bg-accent hover:border-accent hover:text-white hover:shadow-[0_0_20px_rgba(255,77,0,0.4)] transition-all duration-300 motion-reduce:!transform-none"
                 style={{
                     transition:
                         'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), color 0.3s, border-color 0.3s, background-color 0.3s, box-shadow 0.3s',
@@ -140,15 +144,7 @@ export const Contact = () => {
             className="py-20 px-8 md:px-12 lg:px-20 min-h-[60vh] flex flex-col justify-center"
         >
             <div className="flex-1 flex flex-col justify-center">
-                <motion.p
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.8 }}
-                    className="text-cream/60 text-xs tracking-[0.4em] uppercase mb-8"
-                >
-                    C O N T A C T
-                </motion.p>
+                <SectionLabel className="text-cream/80 mb-8">Contact</SectionLabel>
 
                 {/* Smaller heading */}
                 <div className="overflow-hidden">
@@ -168,23 +164,31 @@ export const Contact = () => {
                         whileInView={{ y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1], delay: 0.1 }}
-                        className="text-[clamp(1.8rem,4.5vw,3.5rem)] font-black uppercase leading-[0.9] tracking-[-0.04em] text-foreground/20"
+                        className="text-[clamp(1.8rem,4.5vw,3.5rem)] font-black uppercase leading-[0.9] tracking-[-0.04em] text-faint"
                     >
                         together.
                     </motion.h2>
                 </div>
 
-                <motion.a
+                <motion.div
                     initial={{ opacity: 0, y: 12 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.6, delay: 0.2 }}
-                    href={`mailto:${profile.email}`}
-                    className="self-start mb-12 px-7 py-4 rounded-full bg-accent text-[#0a0a0a] text-sm font-bold tracking-widest uppercase hover:bg-accent/85 transition-colors duration-300"
-                    data-cursor-hide
+                    className="mb-12"
                 >
-                    Start a conversation
-                </motion.a>
+                    {isContactFormEnabled ? (
+                        <ContactForm />
+                    ) : (
+                        <a
+                            href={`mailto:${profile.email}`}
+                            className="inline-block px-7 py-4 rounded-full bg-accent text-[#0a0a0a] text-sm font-bold tracking-widest uppercase hover:bg-accent/85 transition-colors duration-300"
+                            data-cursor-hide
+                        >
+                            Start a conversation
+                        </a>
+                    )}
+                </motion.div>
 
                 {/* Grid of social buttons including Email/Phone */}
                 <div className="border-t border-white/10 pt-8">
@@ -197,7 +201,7 @@ export const Contact = () => {
             </div>
 
             {/* Footer */}
-            <div className="flex justify-between items-end mt-16 text-xs text-foreground/20 tracking-widest uppercase">
+            <div className="flex justify-between items-end mt-16 text-xs text-faint tracking-widest uppercase">
                 <span>© {new Date().getFullYear()} {profile.name}</span>
                 <a
                     href="#"

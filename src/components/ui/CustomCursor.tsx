@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { motion, useMotionValue, useSpring } from 'framer-motion';
+import { motion, useMotionValue, useReducedMotion, useSpring } from 'framer-motion';
 
 type CursorMode = 'idle' | 'engulf' | 'hidden';
 
@@ -16,10 +16,17 @@ export const CustomCursor = () => {
     const [enabled, setEnabled] = useState(false);
     const [mode, setMode] = useState<CursorMode>('idle');
 
+    const reduceMotion = useReducedMotion();
+
     const x = useMotionValue(-100);
     const y = useMotionValue(-100);
-    const springX = useSpring(x, { stiffness: 1400, damping: 70, mass: 0.3 });
-    const springY = useSpring(y, { stiffness: 1400, damping: 70, mass: 0.3 });
+    // Near-instant follow when reduced motion is requested: the cursor still
+    // works, it just stops trailing behind the pointer.
+    const springConfig = reduceMotion
+        ? { stiffness: 10000, damping: 100, mass: 0.1 }
+        : { stiffness: 1400, damping: 70, mass: 0.3 };
+    const springX = useSpring(x, springConfig);
+    const springY = useSpring(y, springConfig);
 
     // Only enable for fine pointers, and drop out if the user plugs in / switches
     // to a touch device mid-session.
@@ -97,7 +104,7 @@ export const CustomCursor = () => {
                     opacity: mode === 'hidden' ? 0 : 1,
                 }}
                 initial={false}
-                transition={{ type: 'tween', ease: 'backOut', duration: 0.25 }}
+                transition={{ type: 'tween', ease: 'backOut', duration: reduceMotion ? 0 : 0.25 }}
             />
         </motion.div>,
         document.body

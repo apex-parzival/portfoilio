@@ -1,3 +1,6 @@
+/** Live deployment. Used for canonical/OG URLs and the sitemap. */
+export const siteUrl = 'https://portfoilio-yaseen.vercel.app';
+
 /** Single source of truth for identity + links, shared by Contact, SideBar and SEO. */
 export const profile = {
     name: 'Mohammed Yaseen Sutar',

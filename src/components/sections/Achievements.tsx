@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { SectionLabel } from '../ui/SectionLabel';
 import { motion } from 'framer-motion';
 
 const achievements = [
@@ -24,15 +25,7 @@ export const Achievements = () => {
 
     return (
         <section id="achievements" className="py-32 px-8 md:px-12 lg:px-20">
-            <motion.p
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8 }}
-                className="text-cream/60 text-xs tracking-[0.4em] uppercase mb-16"
-            >
-                A C H I E V E M E N T S
-            </motion.p>
+            <SectionLabel className="text-cream/80 mb-16">Achievements</SectionLabel>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {achievements.map((item, i) => (
@@ -55,7 +48,7 @@ export const Achievements = () => {
                                 }`}>
                                 0{i + 1}
                             </span>
-                            <span className={`text-xs tracking-widest uppercase transition-colors duration-300 ${hoveredIndex === i ? 'text-[#0a0a0a]/60' : 'text-foreground/20 group-hover:text-accent/60'
+                            <span className={`text-xs tracking-widest uppercase transition-colors duration-300 ${hoveredIndex === i ? 'text-[#0a0a0a]/80' : 'text-faint group-hover:text-accent'
                                 }`}>
                                 {item.event}
                             </span>
@@ -64,7 +57,7 @@ export const Achievements = () => {
                             }`}>
                             {item.title}
                         </h3>
-                        <p className={`text-sm leading-relaxed transition-colors duration-300 ${hoveredIndex === i ? 'text-[#0a0a0a]/70' : 'text-foreground/30'
+                        <p className={`text-sm leading-relaxed transition-colors duration-300 ${hoveredIndex === i ? 'text-[#0a0a0a]/80' : 'text-muted'
                             }`}>
                             {item.desc}
                         </p>

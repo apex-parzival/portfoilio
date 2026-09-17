@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import type { ViewMode } from '../../App';
 
 const heroWords = [
@@ -14,9 +14,10 @@ const taglines = {
 
 export const Hero = ({ viewMode }: { viewMode: ViewMode }) => {
     const sectionRef = useRef<HTMLDivElement>(null);
+    const reduceMotion = useReducedMotion();
 
     const handleMouseMove = (e: React.MouseEvent) => {
-        if (!sectionRef.current || viewMode !== 'both') return;
+        if (reduceMotion || !sectionRef.current || viewMode !== 'both') return;
         const rect = sectionRef.current.getBoundingClientRect();
         sectionRef.current.style.setProperty('--mx', `${e.clientX - rect.left}px`);
         sectionRef.current.style.setProperty('--my', `${e.clientY - rect.top}px`);
@@ -36,7 +37,7 @@ export const Hero = ({ viewMode }: { viewMode: ViewMode }) => {
                     animate: { opacity: 1, y: 0 },
                     transition: { duration: 0.8, delay: 0.3 },
                 } : {})}
-                className={`text-xs md:text-sm tracking-[0.4em] uppercase mb-8 ${isReveal ? 'text-[#0a0a0a]/60' : 'text-cream'
+                className={`text-xs md:text-sm tracking-[0.4em] uppercase mb-8 ${isReveal ? 'text-[#0a0a0a]/80' : 'text-cream'
                     }`}
             >
                 MOHAMMED YASEEN SUTAR
@@ -72,7 +73,7 @@ export const Hero = ({ viewMode }: { viewMode: ViewMode }) => {
                     animate: { opacity: 1, y: 0 },
                     transition: { duration: 0.8, delay: 0.9 },
                 } : {})}
-                className={`mt-8 max-w-xl text-sm md:text-base leading-relaxed ${isReveal ? 'text-[#0a0a0a]/70' : 'text-foreground/40'
+                className={`mt-8 max-w-xl text-sm md:text-base leading-relaxed ${isReveal ? 'text-[#0a0a0a]/80' : 'text-muted'
                     }`}
             >
                 {isReveal ? taglines.reveal : taglines.primary}
@@ -84,7 +85,7 @@ export const Hero = ({ viewMode }: { viewMode: ViewMode }) => {
                     animate: { opacity: 1 },
                     transition: { duration: 0.8, delay: 1.2 },
                 } : {})}
-                className={`mt-14 text-[10px] tracking-[0.3em] uppercase ${isReveal ? 'text-[#0a0a0a]/40' : 'text-foreground/25'
+                className={`mt-14 text-[10px] tracking-[0.3em] uppercase ${isReveal ? 'text-[#0a0a0a]/60' : 'text-faint'
                     }`}
             >
                 Scroll ↓

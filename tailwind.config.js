@@ -14,7 +14,10 @@ export default {
         foreground: '#ededed',
         cream: '#C4A882',
         accent: '#FF4D00',
-        muted: '#666666',
+        // Contrast-checked against #0a0a0a. Prefer these over stacking opacity
+        // on `foreground`, which bottoms out near 1.4:1.
+        muted: '#8a8a8a',   // 5.73:1 — secondary body text (WCAG AA)
+        faint: '#6b6b6b',   // 3.72:1 — decorative only (row numbers)
         'surface': '#141414',
         'surface-light': '#1a1a1a',
       },
