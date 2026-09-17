@@ -75,14 +75,18 @@ function App() {
     };
   }, [loading]);
 
-  const handleSelectMode = (mode: ViewMode) => {
+  const rememberMode = (mode: ViewMode) => {
     setViewMode(mode);
-    setLoading(false);
     try {
       sessionStorage.setItem(STORAGE_KEY, mode);
     } catch {
       // Non-fatal: the choice just won't survive a reload.
     }
+  };
+
+  const handleSelectMode = (mode: ViewMode) => {
+    rememberMode(mode);
+    setLoading(false);
   };
 
   return (
@@ -118,7 +122,7 @@ function App() {
         <Contact />
       </main>
 
-      {!loading && <PersonaToggle viewMode={viewMode} onChange={setViewMode} />}
+      {!loading && <PersonaToggle viewMode={viewMode} onChange={rememberMode} />}
 
       <Analytics />
     </div>
