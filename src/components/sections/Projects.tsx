@@ -95,12 +95,18 @@ export const Projects = () => {
                                     }`}
                                 onMouseEnter={() => setHoveredIndex(i)}
                                 onMouseLeave={() => setHoveredIndex(null)}
-                                data-cursor-hide
                             >
+                                {/*
+                                  * Hiding the cursor only makes sense while the row is a closed
+                                  * bar that fills with accent on hover — that fill IS the hover
+                                  * feedback. Once expanded the panel is ordinary content with a
+                                  * link in it, and an invisible pointer over a button is a bug.
+                                  */}
                                 <button
                                     onClick={() => setExpanded(isOpen ? null : project.title)}
                                     aria-expanded={isOpen}
                                     className="w-full text-left py-6 md:py-8"
+                                    data-cursor-hide={isOpen ? undefined : true}
                                 >
                                     {/*
                                       * Explicit minmax(0,…) tracks: with `auto` minimums a long
