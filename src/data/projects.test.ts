@@ -6,6 +6,7 @@ import {
     projectCategories,
     projects,
 } from './projects';
+import { caseStudies } from './caseStudies';
 
 describe('project data', () => {
     it('gives every project the fields the UI reads', () => {
@@ -74,6 +75,45 @@ describe('project data', () => {
             if (c === 'All') continue;
             const count = projects.filter((p) => p.category.includes(c)).length;
             expect(count, `filter "${c}" matches nothing`).toBeGreaterThan(0);
+        }
+    });
+});
+
+describe('case studies', () => {
+    it('gives every project a case study', () => {
+        for (const p of projects) {
+            expect(caseStudies[p.slug], `${p.slug} has no case study`).toBeDefined();
+        }
+    });
+
+    it('has no case study pointing at a project that does not exist', () => {
+        const slugs = new Set(projects.map((p) => p.slug));
+        for (const key of Object.keys(caseStudies)) {
+            expect(slugs.has(key), `case study "${key}" matches no project`).toBe(true);
+        }
+    });
+
+    it('gives every case study the narrative and a diagram with connected stages', () => {
+        for (const [slug, study] of Object.entries(caseStudies)) {
+            expect(study.problem.length, `${slug} problem`).toBeGreaterThan(80);
+            expect(study.approach.length, `${slug} approach`).toBeGreaterThan(80);
+            expect(study.diagram.title, `${slug} diagram title`).toBeTruthy();
+            // A single column is a list, not a flow.
+            expect(study.diagram.columns.length, `${slug} needs >1 stage`).toBeGreaterThan(1);
+            for (const column of study.diagram.columns) {
+                expect(column.nodes.length, `${slug} / ${column.title} is empty`).toBeGreaterThan(0);
+            }
+        }
+    });
+
+    it('uses only node kinds the diagram component can style', () => {
+        const kinds = new Set(['input', 'process', 'ai', 'store', 'external', 'output']);
+        for (const [slug, study] of Object.entries(caseStudies)) {
+            for (const column of study.diagram.columns) {
+                for (const node of column.nodes) {
+                    expect(kinds.has(node.kind), `${slug}: unknown kind "${node.kind}"`).toBe(true);
+                }
+            }
         }
     });
 });

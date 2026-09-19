@@ -3,6 +3,8 @@ import { Link, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Analytics } from '@vercel/analytics/react';
 import { getProjectBySlug, getProjectNeighbours } from '../data/projects';
+import { getCaseStudy } from '../data/caseStudies';
+import { CaseStudyBody } from '../components/case-study/CaseStudyBody';
 import { profile, siteUrl } from '../data/profile';
 import { CustomCursor } from '../components/ui/CustomCursor';
 import { ScrollProgress } from '../components/ui/ScrollProgress';
@@ -59,6 +61,7 @@ const NotFound = () => (
 export const ProjectDetail = () => {
     const { slug = '' } = useParams();
     const project = getProjectBySlug(slug);
+    const caseStudy = getCaseStudy(slug);
     const { prev, next } = getProjectNeighbours(slug);
 
     useEffect(() => {
@@ -142,7 +145,7 @@ export const ProjectDetail = () => {
                 >
                     <div>
                         <h2 className="text-xs tracking-[0.4em] uppercase text-cream/80 mb-8">
-                            What it does
+                            At a glance
                         </h2>
                         <ul className="space-y-5">
                             {project.highlights.map((h) => (
@@ -171,6 +174,8 @@ export const ProjectDetail = () => {
                         </div>
                     </div>
                 </motion.section>
+
+                {caseStudy && <CaseStudyBody study={caseStudy} />}
 
                 <nav
                     className="mt-24 border-t border-white/10 pt-8 flex flex-col sm:flex-row gap-6 sm:justify-between"

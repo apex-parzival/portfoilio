@@ -86,6 +86,30 @@ html.custom-cursor-active select {
   pointer-events: none;
 }
 
+/* Flow-diagram connector pulse: a dot travelling stage to stage. Horizontal
+   while the diagram is in columns, vertical once it stacks on mobile. */
+@keyframes flow-pulse-x {
+  0%   { transform: translateX(-100%); opacity: 0; }
+  35%  { opacity: 1; }
+  100% { transform: translateX(100%); opacity: 0; }
+}
+
+@keyframes flow-pulse-y {
+  0%   { transform: translateY(-100%); opacity: 0; }
+  35%  { opacity: 1; }
+  100% { transform: translateY(100%); opacity: 0; }
+}
+
+.flow-pulse {
+  animation: flow-pulse-y 2.4s ease-in-out infinite;
+}
+
+@media (min-width: 768px) {
+  .flow-pulse {
+    animation-name: flow-pulse-x;
+  }
+}
+
 /* Marquee animation */
 @keyframes marquee {
   0% {

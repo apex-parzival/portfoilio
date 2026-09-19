@@ -21,12 +21,14 @@ if (slugs.length === 0) throw new Error('No project slugs found in src/data/proj
 const duplicates = slugs.filter((s, i) => slugs.indexOf(s) !== i);
 if (duplicates.length) throw new Error(`Duplicate project slugs: ${duplicates.join(', ')}`);
 
-const today = new Date().toISOString().slice(0, 10);
+// Deliberately no lastmod element. It is optional, search engines largely
+// ignore it, and stamping today's date makes the generated file differ from
+// the committed one on any day the build runs, failing the CI freshness
+// check for no real reason.
 
 const url = (loc, priority, changefreq) =>
   `  <url>\n` +
   `    <loc>${loc}</loc>\n` +
-  `    <lastmod>${today}</lastmod>\n` +
   `    <changefreq>${changefreq}</changefreq>\n` +
   `    <priority>${priority}</priority>\n` +
   `  </url>`;
