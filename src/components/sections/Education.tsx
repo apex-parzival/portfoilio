@@ -47,7 +47,7 @@ export const Education = () => {
                             }`}
                         onMouseEnter={() => setHoveredIndex(i)}
                         onMouseLeave={() => setHoveredIndex(null)}
-                        data-cursor-engulf
+                        data-cursor-hide
                     >
                         <div className="grid grid-cols-1 md:grid-cols-[180px_1fr_1fr] gap-4 md:gap-6 items-baseline">
                             <span className={`text-sm md:text-base font-mono tracking-tight transition-colors duration-300 ${hoveredIndex === i ? 'text-[#0a0a0a]' : 'text-accent'
