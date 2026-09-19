@@ -50,16 +50,22 @@ export const CustomCursor = () => {
     const x = useMotionValue(-100);
     const y = useMotionValue(-100);
 
-    // Tuned to reproduce the original `tween / backOut / 0.12s` follow: a short
-    // visible trail with a slight overshoot. Damping ratio here is ~0.89, i.e.
-    // just underdamped — an overdamped spring felt rigid by comparison.
+    // Free-following reproduces the original `tween / backOut / 0.12s` feel: a
+    // short visible trail, damping ratio ~0.89 so it overshoots very slightly.
+    // Locked onto a control it arrives crisply instead, with the same character
+    // as the size spring below — when the two differ, the box finishes resizing
+    // at a different moment than it finishes moving, which reads as lag.
     //
     // Deliberately NOT branched on prefers-reduced-motion. A cursor trailing by
     // ~120ms is not the kind of motion that setting is protecting against, and
     // branching on it flattened the cursor entirely on machines that report it.
     // The magnetic contact buttons and Lenis smooth scroll still honour it.
-    const springX = useSpring(x, { stiffness: 500, damping: 28, mass: 0.5 });
-    const springY = useSpring(y, { stiffness: 500, damping: 28, mass: 0.5 });
+    const follow = engulfBox
+        ? { stiffness: 900, damping: 45, mass: 0.35 }
+        : { stiffness: 500, damping: 28, mass: 0.5 };
+
+    const springX = useSpring(x, follow);
+    const springY = useSpring(y, follow);
 
     // Only enable for fine pointers, and drop out if the user switches to a
     // touch device mid-session.
@@ -137,7 +143,9 @@ export const CustomCursor = () => {
                     setEngulfBox({
                         width: rect.width,
                         height: rect.height,
-                        radius: getComputedStyle(control).borderRadius || '9999px',
+                        // borderTopLeftRadius is always a single value; the shorthand
+                        // can be four, which does not interpolate cleanly.
+                        radius: getComputedStyle(control).borderTopLeftRadius || '9999px',
                     });
                     x.set(rect.left + rect.width / 2);
                     y.set(rect.top + rect.height / 2);
@@ -202,9 +210,9 @@ export const CustomCursor = () => {
                 }}
                 initial={false}
                 transition={{
-                    type: 'tween',
-                    ease: 'backOut',
-                    duration: mode === 'idle' ? 0.12 : 0.25,
+                    default: { type: 'spring', stiffness: 900, damping: 45, mass: 0.35 },
+                    // Springing opacity looks wrong; keep the fade a plain tween.
+                    opacity: { type: 'tween', duration: 0.15 },
                 }}
             />
         </motion.div>,
