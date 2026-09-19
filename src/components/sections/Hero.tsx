@@ -1,5 +1,5 @@
-import { useRef } from 'react';
 import { motion } from 'framer-motion';
+import { useSpotlight } from '../../hooks/useSpotlight';
 import type { ViewMode } from '../../App';
 
 const heroWords = [
@@ -13,20 +13,7 @@ const taglines = {
 };
 
 export const Hero = ({ viewMode }: { viewMode: ViewMode }) => {
-    const sectionRef = useRef<HTMLDivElement>(null);
-
-    const handleMouseMove = (e: React.MouseEvent) => {
-        if (!sectionRef.current || viewMode !== 'both') return;
-        const rect = sectionRef.current.getBoundingClientRect();
-        sectionRef.current.style.setProperty('--mx', `${e.clientX - rect.left}px`);
-        sectionRef.current.style.setProperty('--my', `${e.clientY - rect.top}px`);
-    };
-
-    const handleMouseLeave = () => {
-        if (!sectionRef.current) return;
-        sectionRef.current.style.setProperty('--mx', '-200px');
-        sectionRef.current.style.setProperty('--my', '-200px');
-    };
+    const { ref: sectionRef, onMouseMove, onMouseLeave: park } = useSpotlight(viewMode === 'both');
 
     const renderContent = (isReveal: boolean) => (
         <div className="min-h-screen flex flex-col items-center justify-center px-8 md:px-12 lg:px-20 pt-24 pb-20 text-center">
@@ -95,8 +82,8 @@ export const Hero = ({ viewMode }: { viewMode: ViewMode }) => {
     return (
         <section
             ref={sectionRef}
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
+            onMouseMove={onMouseMove}
+            onMouseLeave={park}
             className="relative overflow-hidden"
             style={{ '--mx': '-200px', '--my': '-200px' } as React.CSSProperties}
             data-cursor-lens={viewMode === 'both' ? 120 : undefined}

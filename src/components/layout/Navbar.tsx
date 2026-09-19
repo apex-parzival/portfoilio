@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { navLinks, profile, sectionIds } from "../../data/profile";
 import { useActiveSection } from "../../hooks/useActiveSection";
@@ -10,8 +10,34 @@ export const Navbar = () => {
     const active = useActiveSection(sectionIds);
     const overlayRef = useRef<HTMLDivElement>(null);
     const closeMenu = useCallback(() => setIsOpen(false), []);
+    const [navVisible, setNavVisible] = useState(true);
 
     useFocusTrap(overlayRef, isOpen, closeMenu);
+
+    /*
+     * The link stack is ~200px tall and fixed, so it permanently covers the
+     * right-hand column of whatever is scrolling underneath — project
+     * descriptions were disappearing behind it. Hide it while scrolling down,
+     * bring it back on scroll up (and near the top), which is where someone
+     * reaches for navigation anyway.
+     */
+    useEffect(() => {
+        let lastY = window.scrollY;
+
+        const onScroll = () => {
+            const y = window.scrollY;
+            const delta = y - lastY;
+
+            // Ignore sub-pixel jitter and rubber-banding.
+            if (Math.abs(delta) > 6) {
+                setNavVisible(delta < 0 || y < 120);
+                lastY = y;
+            }
+        };
+
+        window.addEventListener('scroll', onScroll, { passive: true });
+        return () => window.removeEventListener('scroll', onScroll);
+    }, []);
 
     const handleScroll = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
         e.preventDefault();
@@ -45,7 +71,11 @@ export const Navbar = () => {
                   * A scrim keeps both the links and whatever is behind them legible.
                   */}
                 <div
-                    className="hidden md:flex flex-col items-end gap-1 rounded-2xl border border-white/5 bg-background/60 backdrop-blur-md px-4 py-3"
+                    className={`hidden md:flex flex-col items-end gap-1 rounded-2xl border border-white/5 bg-background/85 backdrop-blur-md px-4 py-3 transition-all duration-300 ${navVisible
+                        ? 'opacity-100 translate-y-0 pointer-events-auto'
+                        : 'opacity-0 -translate-y-3 pointer-events-none'
+                        }`}
+                    aria-hidden={!navVisible}
                     data-cursor-hide
                 >
                     {navLinks.map((link) => {

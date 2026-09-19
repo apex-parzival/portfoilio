@@ -29,7 +29,7 @@ export const SideBar = () => {
                         href={href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-10 h-10 rounded-full border border-white/15 flex items-center justify-center text-muted hover:text-accent hover:border-accent hover:bg-accent/10 hover:shadow-[0_0_16px_rgba(255,77,0,0.15)] transition-all duration-300"
+                        className="w-10 h-10 rounded-full border border-white/10 bg-background/80 backdrop-blur-md flex items-center justify-center text-cream hover:text-accent hover:border-accent hover:shadow-[0_0_16px_rgba(255,77,0,0.25)] transition-all duration-300"
                         aria-label={`${profile.name} on ${label}`}
                         title={label}
                         data-cursor-hide
@@ -48,7 +48,7 @@ export const SideBar = () => {
                 aria-hidden="true"
             >
                 <span
-                    className="text-[10px] tracking-[0.3em] uppercase text-faint block transition-colors duration-500"
+                    className="text-[10px] tracking-[0.3em] uppercase text-cream/70 block rounded-full bg-background/70 backdrop-blur-md px-1.5 py-3 transition-colors duration-500"
                     style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
                 >
                     {activeLabel}

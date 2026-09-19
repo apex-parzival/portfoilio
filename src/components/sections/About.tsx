@@ -1,5 +1,5 @@
-import { useRef } from 'react';
 import { motion } from 'framer-motion';
+import { useSpotlight } from '../../hooks/useSpotlight';
 import { SectionLabel } from '../ui/SectionLabel';
 import type { ViewMode } from '../../App';
 
@@ -22,20 +22,7 @@ const textLayer2 = (
 );
 
 export const About = ({ viewMode }: { viewMode: ViewMode }) => {
-    const sectionRef = useRef<HTMLDivElement>(null);
-
-    const handleMouseMove = (e: React.MouseEvent) => {
-        if (!sectionRef.current || viewMode !== 'both') return;
-        const rect = sectionRef.current.getBoundingClientRect();
-        sectionRef.current.style.setProperty('--mx', `${e.clientX - rect.left}px`);
-        sectionRef.current.style.setProperty('--my', `${e.clientY - rect.top}px`);
-    };
-
-    const handleMouseLeave = () => {
-        if (!sectionRef.current) return;
-        sectionRef.current.style.setProperty('--mx', '-200px');
-        sectionRef.current.style.setProperty('--my', '-200px');
-    };
+    const { ref: sectionRef, onMouseMove, onMouseLeave: park } = useSpotlight(viewMode === 'both');
 
     const renderContent = (isReveal: boolean) => {
         return (
@@ -60,8 +47,8 @@ export const About = ({ viewMode }: { viewMode: ViewMode }) => {
         <section
             ref={sectionRef}
             id="about"
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
+            onMouseMove={onMouseMove}
+            onMouseLeave={park}
             className="relative overflow-hidden"
             style={{ '--mx': '-200px', '--my': '-200px' } as React.CSSProperties}
             data-cursor-lens={viewMode === 'both' ? 200 : undefined}
