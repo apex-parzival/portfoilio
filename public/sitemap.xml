@@ -6,6 +6,11 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://portfoilio-yaseen.vercel.app/book</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>https://portfoilio-yaseen.vercel.app/projects/bom-error-reduction</loc>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>

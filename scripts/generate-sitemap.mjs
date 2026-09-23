@@ -35,6 +35,7 @@ const url = (loc, priority, changefreq) =>
 
 const body = [
   url(`${siteUrl}/`, '1.0', 'monthly'),
+  url(`${siteUrl}/book`, '0.5', 'yearly'),
   ...slugs.map((slug) => url(`${siteUrl}/projects/${slug}`, '0.8', 'yearly')),
 ].join('\n');
 
@@ -47,4 +48,4 @@ writeFileSync(resolve(root, 'public/sitemap.xml'), xml, 'utf8');
 const robots = `User-agent: *\nAllow: /\n\nSitemap: ${siteUrl}/sitemap.xml\n`;
 writeFileSync(resolve(root, 'public/robots.txt'), robots, 'utf8');
 
-console.log(`sitemap.xml: ${slugs.length + 1} URLs`);
+console.log(`sitemap.xml: ${slugs.length + 2} URLs`);
