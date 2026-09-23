@@ -393,7 +393,7 @@ export const Book = () => {
 
     return (
         <BookContext.Provider value={runtime}>
-            <div className="bk-root bg-[#08090c] text-foreground">
+            <div className="bk-root bg-[#08090c] text-foreground" data-motion="always">
                 <CustomCursor />
                 <FoilDefs />
                 <BookHeader onContents={() => goToFace('contents')} />

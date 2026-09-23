@@ -143,12 +143,15 @@ html.custom-cursor-active select {
 /*
  * Reduced motion: keep the layout and the colour transitions, drop the
  * long travel animations and the spotlight parallax.
+ *
+ * Anything under [data-motion="always"] is exempt — that is /book, whose
+ * float, lamp flicker and ribbon sway are the point of the page.
  */
 @media (prefers-reduced-motion: reduce) {
 
-  *,
-  *::before,
-  *::after {
+  *:not([data-motion="always"], [data-motion="always"] *),
+  *:not([data-motion="always"], [data-motion="always"] *)::before,
+  *:not([data-motion="always"], [data-motion="always"] *)::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
