@@ -1,24 +1,7 @@
 import { useState } from 'react';
 import { SectionLabel } from '../ui/SectionLabel';
+import { achievements } from '../../data/achievements';
 import { motion } from 'framer-motion';
-
-const achievements = [
-    {
-        title: 'Runner Up — ₹1,50,000',
-        event: 'RBIH Ideathon @ IIITB',
-        desc: 'Created a Web3 money lending system for microbusiness owners',
-    },
-    {
-        title: 'Best Project — ₹5,000',
-        event: 'Quant-A-Maze @ NMIT',
-        desc: 'Built a Web3 & ML-based food conservation system',
-    },
-    {
-        title: 'Runner Up — ₹1,500',
-        event: 'Web Wizards @ DSU',
-        desc: 'Built a Halloween-themed website in 3 hours',
-    },
-];
 
 export const Achievements = () => {
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);

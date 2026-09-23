@@ -2,24 +2,37 @@ import { motion } from 'framer-motion';
 import { useSpotlight } from '../../hooks/useSpotlight';
 import { SectionLabel } from '../ui/SectionLabel';
 import type { ViewMode } from '../../App';
+import { profile } from '../../data/profile';
+import { voices } from '../../data/about';
+import type { Voice } from '../../data/about';
 
-// Layer 1: Backend Engineer (Cream text)
-const textLayer1 = (
-    <>
-        I’m <span className="text-accent font-bold not-italic">Mohammed Yaseen Sutar</span>, a backend engineer who designs the systems everything else gets built on. Async APIs, data models that hold up under real load, and the unglamorous parts done properly — auth and token rotation, multi-tenant isolation, rate limiting, migrations that don’t lose rows.
-        <br /><br />
-        Most of what I shipped this year went to real clients: a gateway translating legacy hospital messaging into a national health platform’s format, a multi-tenant attendance backend enforcing row-level security over children’s biometric data, a reverse-auction engine where concurrent bids had to settle deterministically. I’d rather the infrastructure be boring and the product be interesting.
-    </>
-);
+/** Renders a voice's paragraphs, emphasising the author's name where it appears. */
+const renderVoice = (voice: Voice, nameClass: string) =>
+    voice.paragraphs.map((paragraph, i) => {
+        const [before, ...rest] = paragraph.split(profile.name);
+        return (
+            <span key={i}>
+                {i > 0 && (
+                    <>
+                        <br />
+                        <br />
+                    </>
+                )}
+                {rest.length === 0 ? (
+                    paragraph
+                ) : (
+                    <>
+                        {before}
+                        <span className={nameClass}>{profile.name}</span>
+                        {rest.join(profile.name)}
+                    </>
+                )}
+            </span>
+        );
+    });
 
-// Layer 2: AI/ML Engineer (Black text on Orange bg)
-const textLayer2 = (
-    <>
-        I’m <span className="font-bold not-italic">Mohammed Yaseen Sutar</span>, an AI/ML engineer who builds intelligent systems that survive contact with real data. My work runs from computer vision and NLP through to LLM and agentic pipelines — retrieval, embeddings, evaluation, and the deployment story a notebook never has to answer for.
-        <br /><br />
-        I’ve built a multi-agent sourcing pipeline that researches and contacts suppliers on its own, an embedding-plus-LLM-judge engine that catches bill-of-materials errors before they reach the factory floor, and a face-recognition attendance system tuned so a close second match downgrades instead of silently auto-accepting. The interesting work is always in the failure cases.
-    </>
-);
+const textLayer1 = renderVoice(voices.backend, 'text-accent font-bold not-italic');
+const textLayer2 = renderVoice(voices.ai, 'font-bold not-italic');
 
 export const About = ({ viewMode }: { viewMode: ViewMode }) => {
     const { ref: sectionRef, onMouseMove, onMouseLeave: park } = useSpotlight(viewMode === 'both');

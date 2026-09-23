@@ -6,7 +6,7 @@ import App from './App.tsx'
 
 // Detail pages are a secondary path — keep them out of the initial bundle.
 const ProjectDetail = lazy(() => import('./pages/ProjectDetail.tsx'))
-const Book = lazy(() => import('./pages/Book.tsx'))
+const Book = lazy(() => import('./pages/book/Book.tsx'))
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue } from "framer-motion";
 import { navLinks, profile, sectionIds } from "../../data/profile";
 import { useActiveSection } from "../../hooks/useActiveSection";
 import { scrollToId, scrollToTop } from "../../lib/scroll";
 import { useFocusTrap } from "../../hooks/useFocusTrap";
+import { BookGlyph } from "../ui/BookGlyph";
 
 export const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -12,6 +13,7 @@ export const Navbar = () => {
     const overlayRef = useRef<HTMLDivElement>(null);
     const closeMenu = useCallback(() => setIsOpen(false), []);
     const [navVisible, setNavVisible] = useState(true);
+    const bookOpen = useMotionValue(0);
 
     useFocusTrap(overlayRef, isOpen, closeMenu);
 
@@ -129,7 +131,12 @@ export const Navbar = () => {
                         to="/book"
                         className={`text-sm tracking-wide text-cream/70 hover:text-accent transition-colors duration-300 flex items-center gap-2 ${navVisible ? 'pointer-events-auto' : 'pointer-events-none'
                             }`}
+                        onPointerEnter={() => bookOpen.set(1)}
+                        onPointerLeave={() => bookOpen.set(0)}
+                        onFocus={() => bookOpen.set(1)}
+                        onBlur={() => bookOpen.set(0)}
                     >
+                        <BookGlyph open={bookOpen} />
                         THE BOOK
                         <span aria-hidden="true">&#8599;</span>
                     </Link>

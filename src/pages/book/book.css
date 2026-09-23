@@ -1,0 +1,429 @@
+/*
+ * The book's materials. Imported only by the /book route, so none of this —
+ * fonts included — reaches the homepage bundle.
+ */
+@import '@fontsource/eb-garamond/400.css';
+@import '@fontsource/eb-garamond/500.css';
+@import '@fontsource/eb-garamond/600.css';
+@import '@fontsource/eb-garamond/400-italic.css';
+@import '@fontsource/eb-garamond/500-italic.css';
+@import '@fontsource/caveat/600.css';
+
+.bk-root {
+  /* Contrast-checked against --bk-paper (#efe6d2):
+       ink 14:1 · ink-soft 6.3:1 · rubric 4.8:1 · ink-faint 3.2:1 (decorative only) */
+  --bk-paper: #efe6d2;
+  --bk-paper-deep: #e3d6bb;
+  --bk-ink: #211c16;
+  --bk-ink-soft: #5b5145;
+  --bk-ink-faint: #8a7f6f;
+  --bk-rubric: #b3390c;
+  --bk-rubric-bright: #e0521a;
+  --bk-cloth: #131a29;
+  --bk-gold: #d9b56c;
+}
+
+.bk-serif {
+  font-family: 'EB Garamond', 'Garamond', 'Georgia', serif;
+  font-feature-settings: 'kern', 'liga', 'onum';
+}
+
+.bk-script {
+  font-family: 'Caveat', 'Segoe Script', cursive;
+  font-weight: 600;
+}
+
+/* :where() keeps specificity at zero so Tailwind tracking utilities can override it. */
+:where(.bk-caps) {
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-feature-settings: 'kern', 'lnum';
+}
+
+.bk-lnum {
+  font-feature-settings: 'kern', 'lnum', 'tnum';
+}
+
+/* ─── Paper ─────────────────────────────────────────────────────────────────
+   Warm stock with a whisper of grain (fractal noise, generated), a slightly
+   darker rim like handled paper, and the gutter shadow where it binds. */
+
+.bk-paper {
+  background-color: var(--bk-paper);
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .32 0 0 0 0 .26 0 0 0 0 .17 0 0 0 .11 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    radial-gradient(120% 90% at 50% 45%, transparent 55%, rgba(120, 90, 50, 0.16) 100%);
+  color: var(--bk-ink);
+}
+
+.bk-recto {
+  border-radius: 2px 5px 5px 2px;
+  box-shadow: inset 1px 0 0 rgba(90, 60, 30, 0.1);
+}
+
+.bk-recto::after,
+.bk-verso::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Gutter: the page curves down into the binding and catches less light. */
+.bk-recto::after {
+  background: linear-gradient(90deg,
+      rgba(70, 45, 20, 0.34) 0%,
+      rgba(70, 45, 20, 0.12) 3.5%,
+      rgba(70, 45, 20, 0.04) 9%,
+      transparent 16%);
+}
+
+.bk-verso {
+  border-radius: 5px 2px 2px 5px;
+}
+
+.bk-verso::after {
+  background: linear-gradient(270deg,
+      rgba(70, 45, 20, 0.34) 0%,
+      rgba(70, 45, 20, 0.12) 3.5%,
+      rgba(70, 45, 20, 0.04) 9%,
+      transparent 16%);
+}
+
+/* ─── Type ──────────────────────────────────────────────────────────────── */
+
+.bk-dropcap::first-letter {
+  float: left;
+  font-size: 3.55em;
+  line-height: 0.8;
+  padding: 0.06em 0.09em 0 0;
+  margin-top: 0.04em;
+  color: var(--bk-rubric);
+  font-weight: 500;
+}
+
+.bk-leader {
+  flex: 1;
+  min-width: 12px;
+  margin: 0 6px 0.28em;
+  border-bottom: 1.5px dotted var(--bk-ink-faint);
+  opacity: 0.8;
+}
+
+.bk-link {
+  color: var(--bk-rubric);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  text-decoration-color: rgba(179, 57, 12, 0.4);
+  transition: text-decoration-color 0.25s, color 0.25s;
+}
+
+.bk-link:hover {
+  color: var(--bk-rubric-bright);
+  text-decoration-color: currentColor;
+}
+
+/* ─── Cloth, board, foil ─────────────────────────────────────────────────── */
+
+.bk-cloth {
+  background:
+    radial-gradient(120% 90% at 22% 8%, #22304a 0%, #151d2e 42%, #0b101b 100%);
+}
+
+.bk-cloth-weave {
+  background-image:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.032) 0 1px, transparent 1px 3px),
+    radial-gradient(90% 70% at 50% 40%, transparent 35%, rgba(0, 0, 0, 0.55) 100%);
+  mix-blend-mode: overlay;
+}
+
+/* Foil catches the light as the book tilts: --shine is driven by the pointer. */
+.bk-foil {
+  background: linear-gradient(105deg,
+      #7a5a26 0%,
+      #c79a4d 18%,
+      #f6e2a8 32%,
+      #fff8e2 38%,
+      #e4bd6d 46%,
+      #9c7432 62%,
+      #e9c982 78%,
+      #7a5a26 100%);
+  background-size: 260% 100%;
+  background-position: var(--shine, 50%) 50%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.7)) drop-shadow(0 -0.5px 0 rgba(255, 240, 200, 0.12));
+}
+
+.bk-foil-stroke {
+  stroke: url(#bk-foil-grad);
+}
+
+/* A slow sheen that crosses the board once on arrival, then follows the tilt. */
+.bk-sheen {
+  background: linear-gradient(115deg,
+      transparent 30%,
+      rgba(255, 244, 220, 0.09) 44%,
+      rgba(255, 244, 220, 0.16) 50%,
+      rgba(255, 244, 220, 0.09) 56%,
+      transparent 70%);
+  background-size: 300% 100%;
+  background-position: var(--shine, 50%) 50%;
+  mix-blend-mode: screen;
+}
+
+.bk-sheen-arrive {
+  animation: bk-sheen-arrive 2.4s cubic-bezier(0.22, 1, 0.36, 1) 0.9s both;
+}
+
+@keyframes bk-sheen-arrive {
+  from {
+    background-position: 150% 50%;
+    opacity: 0;
+  }
+
+  25% {
+    opacity: 1;
+  }
+
+  to {
+    background-position: -40% 50%;
+    opacity: 0;
+  }
+}
+
+/* Blind emboss: a pressed frame, lit from the top left. */
+.bk-emboss {
+  border: 1px solid rgba(0, 0, 0, 0.55);
+  box-shadow:
+    inset 1px 1px 0 rgba(255, 255, 255, 0.07),
+    1px 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* Endpapers: navy with a fine gilt lattice. */
+.bk-endpaper {
+  background-color: #141b2b;
+  background-image:
+    repeating-linear-gradient(45deg, transparent 0 13px, rgba(217, 181, 108, 0.22) 13px 14px),
+    repeating-linear-gradient(-45deg, transparent 0 13px, rgba(217, 181, 108, 0.22) 13px 14px),
+    radial-gradient(circle at 50% 50%, rgba(217, 181, 108, 0.1) 0 2px, transparent 2.5px);
+  background-size: auto, auto, 19.8px 19.8px;
+}
+
+/* ─── The block of pages, seen edge-on ───────────────────────────────────── */
+
+.bk-edge-fore {
+  background-color: #e8dcc2;
+  background-image: repeating-linear-gradient(90deg,
+      rgba(120, 95, 60, 0.28) 0 0.6px,
+      transparent 0.6px 1.6px);
+}
+
+.bk-edge-top {
+  background-color: #e8dcc2;
+  background-image: repeating-linear-gradient(0deg,
+      rgba(120, 95, 60, 0.28) 0 0.6px,
+      transparent 0.6px 1.6px);
+}
+
+.bk-spine-face {
+  background: linear-gradient(90deg, #0b101b, #1a2438 50%, #0b101b);
+}
+
+/* ─── The desk ──────────────────────────────────────────────────────────── */
+
+.bk-lamp {
+  background:
+    radial-gradient(38% 46% at 50% 44%, rgba(255, 190, 120, 0.16), transparent 70%),
+    radial-gradient(70% 60% at 50% 40%, rgba(255, 120, 40, 0.07), transparent 75%);
+  animation: bk-lamp-on 1.6s steps(1, end) both;
+}
+
+@keyframes bk-lamp-on {
+  0% {
+    opacity: 0;
+  }
+
+  18% {
+    opacity: 0.55;
+  }
+
+  26% {
+    opacity: 0.1;
+  }
+
+  40% {
+    opacity: 0.8;
+  }
+
+  48% {
+    opacity: 0.35;
+  }
+
+  60%,
+  100% {
+    opacity: 1;
+  }
+}
+
+.bk-float {
+  animation: bk-float 7s ease-in-out infinite;
+}
+
+@keyframes bk-float {
+
+  0%,
+  100% {
+    transform: translateY(0) rotateZ(0deg);
+  }
+
+  50% {
+    transform: translateY(-7px) rotateZ(-0.35deg);
+  }
+}
+
+/* Satin ribbon bookmark, swaying from where it leaves the pages. */
+.bk-ribbon {
+  background: linear-gradient(90deg, #7e2206, #d8490f 35%, #ff7a3d 50%, #c9400c 65%, #6f1d05);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 84%, 0 100%);
+  transform-origin: 50% 0;
+  animation: bk-ribbon-sway 5.5s ease-in-out infinite;
+}
+
+@keyframes bk-ribbon-sway {
+
+  0%,
+  100% {
+    rotate: 2deg;
+  }
+
+  50% {
+    rotate: -3deg;
+  }
+}
+
+/* ─── Interactions ──────────────────────────────────────────────────────── */
+
+/* Dog-eared corner: lifts on hover, turns the page on click. */
+.bk-dogear {
+  position: absolute;
+  bottom: 0;
+  width: 58px;
+  height: 58px;
+  cursor: pointer;
+  z-index: 5;
+}
+
+.bk-dogear::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1), height 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  filter: drop-shadow(-3px -3px 4px rgba(60, 40, 20, 0.28));
+}
+
+.bk-dogear-next {
+  right: 0;
+}
+
+.bk-dogear-next::before {
+  right: 0;
+  background: linear-gradient(135deg, #fbf5e7 0%, #e9dcbf 50%, transparent 50%);
+  border-radius: 0 0 5px 0;
+}
+
+.bk-dogear-prev {
+  left: 0;
+}
+
+.bk-dogear-prev::before {
+  left: 0;
+  background: linear-gradient(225deg, #fbf5e7 0%, #e9dcbf 50%, transparent 50%);
+  border-radius: 0 0 0 5px;
+}
+
+.bk-dogear:hover::before,
+.bk-dogear:focus-visible::before {
+  width: 46px;
+  height: 46px;
+}
+
+.bk-dogear-hint {
+  position: absolute;
+  bottom: 12px;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--bk-rubric);
+  opacity: 0;
+  transition: opacity 0.3s 0.1s;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.bk-dogear-next .bk-dogear-hint {
+  right: 52px;
+}
+
+.bk-dogear-prev .bk-dogear-hint {
+  left: 52px;
+}
+
+.bk-dogear:hover .bk-dogear-hint {
+  opacity: 1;
+}
+
+/* Wax seal: presses in when you press it. */
+.bk-seal {
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.35s;
+  filter: drop-shadow(0 6px 8px rgba(80, 20, 0, 0.35));
+}
+
+.bk-seal:hover {
+  transform: rotate(-8deg) scale(1.06);
+  filter: drop-shadow(0 10px 14px rgba(80, 20, 0, 0.45));
+}
+
+.bk-seal:active {
+  transform: rotate(-8deg) scale(0.94);
+}
+
+.bk-medal-shine {
+  animation: bk-medal-shine 3.2s ease-in-out infinite;
+}
+
+@keyframes bk-medal-shine {
+
+  0%,
+  60%,
+  100% {
+    opacity: 0;
+  }
+
+  75% {
+    opacity: 0.85;
+  }
+}
+
+.bk-hint-bob {
+  animation: bk-hint-bob 1.8s ease-in-out infinite;
+}
+
+@keyframes bk-hint-bob {
+
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.55;
+  }
+
+  50% {
+    transform: translateY(6px);
+    opacity: 1;
+  }
+}

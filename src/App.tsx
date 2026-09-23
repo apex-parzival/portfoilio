@@ -15,6 +15,7 @@ import { Projects } from './components/sections/Projects';
 import { Experience } from './components/sections/Experience';
 import { Achievements } from './components/sections/Achievements';
 import { Contact } from './components/sections/Contact';
+import { BookTeaser } from './components/sections/BookTeaser';
 import { LoadingScreen } from './components/ui/LoadingScreen';
 import { PersonaToggle } from './components/ui/PersonaToggle';
 
@@ -119,6 +120,7 @@ function App() {
         <Projects />
         <Experience />
         <Achievements />
+        <BookTeaser />
         <Contact />
       </main>
 

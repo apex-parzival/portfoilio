@@ -24,6 +24,13 @@ export const SectionLabel = ({ children, className = '', delay = 0 }: SectionLab
         className={`text-xs tracking-[0.4em] uppercase font-normal ${className}`}
     >
         <span className="sr-only">{children}</span>
-        <span aria-hidden="true">{children.toUpperCase().split('').join(' ')}</span>
+        {/* Letters are spaced with ordinary spaces, so words need a wider, unbreakable gap or they run together. */}
+        <span aria-hidden="true">
+            {children
+                .toUpperCase()
+                .split(' ')
+                .map((word) => word.split('').join(' '))
+                .join('\u00a0\u00a0\u00a0')}
+        </span>
     </motion.h2>
 );
