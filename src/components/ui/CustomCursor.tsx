@@ -20,6 +20,26 @@ const ENGULF_SELECTOR = '[data-cursor-engulf], a, button';
  * Merging only reads well at control scale. Anything larger keeps the plain
  * blob rather than becoming a full-width wash across the viewport.
  */
+/*
+ * Reproduces the original `tween / backOut / 0.12s` follow: a short visible
+ * trail, damping ratio ~0.89 so it overshoots very slightly.
+ *
+ * Defined at module scope on purpose. This was briefly an inline object that
+ * switched config when the cursor merged with a control, which gave it a fresh
+ * identity on every render and silently froze the spring — the cursor still
+ * resized and changed mode, but stopped following the pointer. One stable
+ * config is worth more than the extra nuance.
+ *
+ * Deliberately NOT branched on prefers-reduced-motion either. A cursor trailing
+ * by ~120ms is not what that setting protects against, and branching on it
+ * flattened the cursor entirely on machines that report it. The magnetic
+ * contact buttons and Lenis smooth scroll still honour it.
+ */
+const FOLLOW = { stiffness: 500, damping: 28, mass: 0.5 } as const;
+
+/** How far past a locked control the pointer may stray before the lock drops. */
+const LOCK_SLACK = 8;
+
 const MAX_MERGE_WIDTH = 420;
 const MAX_MERGE_HEIGHT = 160;
 
@@ -50,22 +70,8 @@ export const CustomCursor = () => {
     const x = useMotionValue(-100);
     const y = useMotionValue(-100);
 
-    // Free-following reproduces the original `tween / backOut / 0.12s` feel: a
-    // short visible trail, damping ratio ~0.89 so it overshoots very slightly.
-    // Locked onto a control it arrives crisply instead, with the same character
-    // as the size spring below — when the two differ, the box finishes resizing
-    // at a different moment than it finishes moving, which reads as lag.
-    //
-    // Deliberately NOT branched on prefers-reduced-motion. A cursor trailing by
-    // ~120ms is not the kind of motion that setting is protecting against, and
-    // branching on it flattened the cursor entirely on machines that report it.
-    // The magnetic contact buttons and Lenis smooth scroll still honour it.
-    const follow = engulfBox
-        ? { stiffness: 900, damping: 45, mass: 0.35 }
-        : { stiffness: 500, damping: 28, mass: 0.5 };
-
-    const springX = useSpring(x, follow);
-    const springY = useSpring(y, follow);
+    const springX = useSpring(x, FOLLOW);
+    const springY = useSpring(y, FOLLOW);
 
     // Only enable for fine pointers, and drop out if the user switches to a
     // touch device mid-session.
@@ -97,11 +103,27 @@ export const CustomCursor = () => {
             // While locked onto a control, sit on its centre rather than the
             // pointer — that is what makes it read as merged. Recomputed per
             // move so it stays aligned if the page scrolls underneath.
+            //
+            // The lock is verified against the pointer rather than trusted:
+            // releasing it used to depend on a later mouseover arriving, and if
+            // that event was swallowed — by an overlay, or by an element that
+            // is not a release site — the cursor stayed pinned indefinitely.
             if (target?.isConnected) {
                 const rect = target.getBoundingClientRect();
-                x.set(rect.left + rect.width / 2);
-                y.set(rect.top + rect.height / 2);
-                return;
+                const inside =
+                    e.clientX >= rect.left - LOCK_SLACK &&
+                    e.clientX <= rect.right + LOCK_SLACK &&
+                    e.clientY >= rect.top - LOCK_SLACK &&
+                    e.clientY <= rect.bottom + LOCK_SLACK;
+
+                if (inside) {
+                    x.set(rect.left + rect.width / 2);
+                    y.set(rect.top + rect.height / 2);
+                    return;
+                }
+
+                releaseTarget();
+                setMode('idle');
             }
 
             x.set(e.clientX);

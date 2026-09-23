@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import type { ComponentType } from 'react';
 import { SectionLabel } from '../ui/SectionLabel';
+import { Link } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 import { profile } from '../../data/profile';
 import { scrollToTop } from '../../lib/scroll';
@@ -203,6 +204,13 @@ export const Contact = () => {
             {/* Footer */}
             <div className="flex justify-between items-end mt-16 text-xs text-faint tracking-widest uppercase">
                 <span>© {new Date().getFullYear()} {profile.name}</span>
+                <Link
+                    to="/book"
+                    className="hover:text-accent transition-colors duration-300"
+                    data-cursor-hide
+                >
+                    The Book ↗
+                </Link>
                 <a
                     href="#"
                     onClick={handleTop}

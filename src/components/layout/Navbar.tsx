@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { navLinks, profile, sectionIds } from "../../data/profile";
 import { useActiveSection } from "../../hooks/useActiveSection";
@@ -56,11 +57,22 @@ export const Navbar = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 1, delay: 0.5 }}
-                className="fixed top-0 left-0 right-0 z-40 px-8 md:px-12 py-6 flex items-start justify-between"
+                /*
+                 * pointer-events-none is load-bearing: this bar spans the full
+                 * width and is as tall as the link stack, so with default
+                 * pointer events it intercepts clicks and hovers across the
+                 * whole top band of the page. Only the controls opt back in.
+                 */
+                className="fixed top-0 left-0 right-0 z-40 px-8 md:px-12 py-6 flex items-start justify-between pointer-events-none"
                 aria-label="Primary"
             >
                 {/* Logo / Name */}
-                <a href="#" onClick={handleTop} aria-label={`${profile.name} — back to top`}>
+                <a
+                    href="#"
+                    onClick={handleTop}
+                    className="pointer-events-auto"
+                    aria-label={`${profile.name} — back to top`}
+                >
                     <div className="w-10 h-10 rounded-full bg-background/80 backdrop-blur-md border border-foreground/20 flex items-center justify-center text-xs font-bold text-foreground">
                         {profile.initials}
                     </div>
@@ -71,9 +83,9 @@ export const Navbar = () => {
                   * A scrim keeps both the links and whatever is behind them legible.
                   */}
                 <div
-                    className={`hidden md:flex flex-col items-end gap-1 rounded-2xl border border-white/5 bg-background/85 backdrop-blur-md px-4 py-3 transition-all duration-300 ${navVisible
-                        ? 'opacity-100 translate-y-0 pointer-events-auto'
-                        : 'opacity-0 -translate-y-3 pointer-events-none'
+                    className={`hidden md:flex flex-col items-end gap-1 rounded-2xl border border-white/5 bg-background/85 backdrop-blur-md px-4 py-3 transition-all duration-300 pointer-events-none ${navVisible
+                        ? 'opacity-100 translate-y-0'
+                        : 'opacity-0 -translate-y-3'
                         }`}
                     aria-hidden={!navVisible}
                     data-cursor-hide
@@ -86,7 +98,8 @@ export const Navbar = () => {
                                 href={`#${link.id}`}
                                 onClick={(e) => handleScroll(e, link.id)}
                                 aria-current={isActive ? 'true' : undefined}
-                                className={`relative group overflow-hidden text-sm tracking-wide transition-colors duration-300 flex items-center gap-2 ${isActive ? 'text-accent' : 'text-foreground/60 hover:text-accent'
+                                className={`relative group overflow-hidden text-sm tracking-wide transition-colors duration-300 flex items-center gap-2 ${navVisible ? 'pointer-events-auto' : 'pointer-events-none'
+                                    } ${isActive ? 'text-accent' : 'text-foreground/60 hover:text-accent'
                                     }`}
                             >
                                 <span
@@ -105,12 +118,27 @@ export const Navbar = () => {
                             </a>
                         );
                     })}
+
+                    {/*
+                      * A route rather than a section, so it sits below a rule and
+                      * cannot live in navLinks — the scroll-spy and the nav-anchor
+                      * test both assume every entry resolves to a section id.
+                      */}
+                    <span className="w-full h-px bg-white/10 my-2" aria-hidden="true" />
+                    <Link
+                        to="/book"
+                        className={`text-sm tracking-wide text-cream/70 hover:text-accent transition-colors duration-300 flex items-center gap-2 ${navVisible ? 'pointer-events-auto' : 'pointer-events-none'
+                            }`}
+                    >
+                        THE BOOK
+                        <span aria-hidden="true">&#8599;</span>
+                    </Link>
                 </div>
 
                 {/* Mobile menu button */}
                 <button
                     onClick={() => setIsOpen(true)}
-                    className="md:hidden text-sm tracking-widest uppercase text-foreground"
+                    className="md:hidden pointer-events-auto text-sm tracking-widest uppercase text-foreground"
                     aria-expanded={isOpen}
                     aria-label="Open navigation menu"
                 >
@@ -151,6 +179,19 @@ export const Navbar = () => {
                                 {link.name}
                             </motion.a>
                         ))}
+                        <motion.div
+                            initial={{ opacity: 0, y: 40 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.2 + navLinks.length * 0.1, duration: 0.5 }}
+                        >
+                            <Link
+                                to="/book"
+                                onClick={closeMenu}
+                                className="text-2xl font-bold uppercase tracking-tighter text-background/70 hover:text-background transition-colors"
+                            >
+                                The Book &#8599;
+                            </Link>
+                        </motion.div>
                     </motion.div>
                 )}
             </AnimatePresence>

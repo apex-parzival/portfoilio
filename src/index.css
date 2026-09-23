@@ -114,18 +114,17 @@ html.custom-cursor-active select {
    Materials for the CSS-3D book. Everything here is generated — no textures to
    download, so the whole scene costs nothing beyond the CSS itself. */
 
-/* Open, the spread is twice this wide — so on a phone the book has to stay
-   under half the viewport or the cover swings off-screen. */
+/* Three constraints at once, so one expression drives both dimensions:
+     38vw — open, the spread is twice this wide, so it must clear half the
+            viewport or the cover swings off-screen
+     44vh — a fixed pixel height filled a short viewport edge to edge and
+            collided with the scroll hint
+     340px — and it should not get silly on a large monitor
+   Height follows from width, so the aspect ratio never distorts. */
 .book-size {
-  width: min(44vw, 210px);
-  height: min(59vw, 284px);
-}
-
-@media (min-width: 768px) {
-  .book-size {
-    width: 400px;
-    height: 540px;
-  }
+  --book-w: min(38vw, 44vh, 340px);
+  width: var(--book-w);
+  height: calc(var(--book-w) * 1.35);
 }
 
 /* Cover board: deep navy-black with a lit top-left edge. */
