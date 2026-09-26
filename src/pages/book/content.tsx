@@ -133,7 +133,7 @@ export const CopyrightPage = () => {
                 <div className="relative">
                     <p className="pr-[92px]">
                         Typeset in EB Garamond. Bound in CSS: a stack of planes in a single preserve-3d context,
-                        turned by your scroll. No WebGL was used in the making of this book.
+                        turned by your scroll. Only the two who turn its pages are WebGL.
                     </p>
                     <Marginalia played={played} className="right-0 bottom-0 w-[84px] text-right" rotate={-7}>
                         yes, really.
@@ -592,7 +592,7 @@ export const ColophonPage = () => {
             <p className="mt-1.5 text-[11.5px] leading-[1.55] text-[color:var(--bk-ink-soft)] max-w-[300px]">
                 This book was set in EB Garamond, with notes in the margins in Caveat. It was bound in CSS —
                 ten leaves in a single preserve-3d context, turned by your scroll, and lit by a lamp that
-                does not exist.
+                does not exist. Its robot is Tomás Laulhé&rsquo;s, from the three.js examples.
             </p>
             <motion.p
                 className="bk-script mt-4 text-[19px] leading-[1.1] text-[color:var(--bk-rubric)] max-w-[280px]"

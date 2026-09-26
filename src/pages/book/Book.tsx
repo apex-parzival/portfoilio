@@ -1,5 +1,5 @@
 import './book.css';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
     motion,
@@ -43,6 +43,10 @@ import {
 } from './timeline';
 import { Leaf } from './Leaf';
 import { Crew } from './Crew';
+
+// three.js is heavy and only the page-turners need it: fetched after the book
+// is up, with the 2D flyers covering until it lands.
+const Flyers3D = lazy(() => import('./three/Flyers3D'));
 import { CoverFace } from './Cover';
 import { Dust } from './Dust';
 import { FoilDefs } from './primitives';
@@ -186,6 +190,8 @@ export const Book = () => {
 
     // ─── Where are we ─────────────────────────────────────────────────────
     const [stopIndex, setStopIndex] = useState(0);
+    /** True once the 3D page-turners are loaded and flying. */
+    const [flyers3d, setFlyers3d] = useState(false);
     // Not state: pages subscribe to their own entry, so arriving at a spread
     // wakes those two pages rather than re-rendering the whole book mid-turn.
     // The cover is on screen before anything moves, so it starts out seen.
@@ -621,7 +627,7 @@ export const Book = () => {
                                                     {leaves}
 
                                                     {/* The two who turn the pages, in front of the whole block. */}
-                                                    <Crew />
+                                                    <Crew drawn={!flyers3d} />
 
                                                     {/* Printed on the back board: the last page. */}
                                                     <div className="absolute inset-0" style={{ transform: `translateZ(${BASE_Z}px)` }}>
@@ -640,6 +646,9 @@ export const Book = () => {
                             </div>
                         </div>
 
+                        <Suspense fallback={null}>
+                            <Flyers3D onReady={() => setFlyers3d(true)} />
+                        </Suspense>
                     </div>
                 </div>
 
@@ -658,7 +667,7 @@ export const Book = () => {
                     <h2 className="bk-serif italic text-[26px] text-cream mb-5">How this book is bound</h2>
                     <div className="bk-serif grid gap-5 md:grid-cols-3 text-[16px] leading-relaxed text-muted max-w-5xl">
                         <p>
-                            No 3D engine. Ten leaves sit in one CSS{' '}
+                            The book itself is no 3D-engine scene. Ten leaves sit in one CSS{' '}
                             <code className="text-cream font-mono text-[13px]">preserve-3d</code> context, each hinged on{' '}
                             <code className="text-cream font-mono text-[13px]">transform-origin: left</code>. Real
                             depth separates the foil from the cloth, and the page block thickens and thins as you read.
@@ -669,8 +678,10 @@ export const Book = () => {
                             itself; drag a page and it follows your hand.
                         </p>
                         <p>
-                            The paper grain, cloth weave, gilt lattice and page edges are all generated in CSS; the
-                            dust is a canvas. The only downloads are two typefaces.
+                            The paper grain, cloth weave, gilt lattice and page edges are generated in CSS; the dust
+                            is a canvas. Only the page-turners are WebGL — a fairy modelled in code, and Tomás
+                            Laulhé&rsquo;s CC0 robot from the three.js examples — pinned to the page by reading back
+                            where the browser drew it.
                         </p>
                     </div>
                     <Link
