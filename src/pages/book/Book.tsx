@@ -12,7 +12,7 @@ import {
 import { Analytics } from '@vercel/analytics/react';
 import { CustomCursor } from '../../components/ui/CustomCursor';
 import { profile, siteUrl } from '../../data/profile';
-import { BookContext, type BookRuntime } from './context';
+import { BookContext, SeenFaces, type BookRuntime } from './context';
 import {
     BASE_Z,
     BOARD_OVERHANG,
@@ -21,13 +21,16 @@ import {
     LEAF_DZ,
     PAGE_H,
     PAGE_W,
+    DWELL,
     TOTAL,
+    TURN,
     VH_PER_UNIT,
     buildStops,
     cameraScale,
     cameraX,
     castFrom,
     clamp01,
+    easeInOutCubic,
     faceMeta,
     facesAtStop,
     isRestingAt,
@@ -39,6 +42,7 @@ import {
     type FaceId,
 } from './timeline';
 import { Leaf } from './Leaf';
+import { Crew } from './Crew';
 import { CoverFace } from './Cover';
 import { Dust } from './Dust';
 import { FoilDefs } from './primitives';
@@ -114,7 +118,9 @@ export const Book = () => {
 
     // ─── Scroll → timeline ────────────────────────────────────────────────
     const { scrollYProgress } = useScroll({ target: trackRef, offset: ['start start', 'end end'] });
-    const smooth = useSpring(scrollYProgress, { stiffness: 120, damping: 28, mass: 0.55, restDelta: 0.00005 });
+    // Soft and overdamped: the book trails the scroll slightly and settles
+    // without ever overshooting, which is what reads as weight rather than lag.
+    const smooth = useSpring(scrollYProgress, { stiffness: 72, damping: 26, mass: 0.9, restDelta: 0.00002 });
     const u = useTransform(smooth, (p) => clamp01(p) * TOTAL);
 
     // ─── Camera ───────────────────────────────────────────────────────────
@@ -180,15 +186,17 @@ export const Book = () => {
 
     // ─── Where are we ─────────────────────────────────────────────────────
     const [stopIndex, setStopIndex] = useState(0);
-    const [seen, setSeen] = useState<ReadonlySet<FaceId>>(() => new Set<FaceId>(['cover']));
+    // Not state: pages subscribe to their own entry, so arriving at a spread
+    // wakes those two pages rather than re-rendering the whole book mid-turn.
+    // The cover is on screen before anything moves, so it starts out seen.
+    const seenRef = useRef<SeenFaces | null>(null);
+    seenRef.current ??= new SeenFaces(['cover']);
+    const seen = seenRef.current;
 
     useMotionValueEvent(u, 'change', (v) => {
         const i = nearestStop(stops, v);
         setStopIndex((prev) => (prev === i ? prev : i));
-        if (isRestingAt(v, single)) {
-            const faces = facesAtStop(stops[i]);
-            setSeen((prev) => (faces.every((f) => prev.has(f)) ? prev : new Set([...prev, ...faces])));
-        }
+        if (isRestingAt(v, single)) seen.add(facesAtStop(stops[i]));
     });
 
     const stop = stops[Math.min(stopIndex, stops.length - 1)];
@@ -202,6 +210,7 @@ export const Book = () => {
     const programmaticUntil = useRef(0);
     const targetStop = useRef(0);
     const dragging = useRef(false);
+    const glide = useRef(0);
 
     const geometry = useCallback(() => {
         const el = trackRef.current;
@@ -215,14 +224,61 @@ export const Book = () => {
         return clamp01((window.scrollY - top) / range) * TOTAL;
     }, [geometry]);
 
+    /** Cancels any glide in flight. */
+    const stopGlide = useCallback(() => {
+        if (glide.current) {
+            cancelAnimationFrame(glide.current);
+            glide.current = 0;
+        }
+    }, []);
+
     const scrollToU = useCallback(
         (target: number, behavior: ScrollBehavior = 'smooth') => {
             const { top, range } = geometry();
-            programmaticUntil.current = performance.now() + (behavior === 'smooth' ? 1300 : 150);
-            window.scrollTo({ top: top + clamp01(target / TOTAL) * range, behavior });
+            const to = top + clamp01(target / TOTAL) * range;
+            stopGlide();
+
+            if (behavior === 'instant') {
+                programmaticUntil.current = performance.now() + 150;
+                window.scrollTo({ top: to, behavior: 'auto' });
+                return;
+            }
+
+            const from = window.scrollY;
+            const delta = to - from;
+            if (Math.abs(delta) < 1) return;
+
+            // The browser's own smooth scroll is brisk and its pace cannot be
+            // set, which made every turn a snap. One step is one unhurried
+            // sweep; asking for several at once only stretches it so far.
+            const step = (range * (TURN + DWELL)) / TOTAL;
+            const duration = Math.min(2900, Math.max(760, 1550 * Math.sqrt(Math.abs(delta) / step)));
+            const started = performance.now();
+            programmaticUntil.current = started + duration + 140;
+
+            const frame = (now: number) => {
+                const p = clamp01((now - started) / duration);
+                window.scrollTo(0, from + delta * easeInOutCubic(p));
+                glide.current = p < 1 ? requestAnimationFrame(frame) : 0;
+            };
+            glide.current = requestAnimationFrame(frame);
         },
-        [geometry]
+        [geometry, stopGlide]
     );
+
+    // A hand on the wheel always wins: a glide yields the moment you scroll.
+    useEffect(() => {
+        const yield_ = () => {
+            stopGlide();
+            programmaticUntil.current = 0;
+        };
+        window.addEventListener('wheel', yield_, { passive: true });
+        window.addEventListener('touchstart', yield_, { passive: true });
+        return () => {
+            window.removeEventListener('wheel', yield_);
+            window.removeEventListener('touchstart', yield_);
+        };
+    }, [stopGlide]);
 
     const goToStop = useCallback(
         (i: number, behavior?: ScrollBehavior) => {
@@ -383,9 +439,34 @@ export const Book = () => {
         else goToStop(from);
     };
 
+    // Deliberately free of anything that changes as you read: every page in
+    // the book consumes this, so a new identity here re-renders all of them.
     const runtime = useMemo<BookRuntime>(
-        () => ({ u, single, activeFaces, seenFaces: seen, goToFace, next, prev, restart }),
-        [u, single, activeFaces, seen, goToFace, next, prev, restart]
+        () => ({ u, single, seen, goToFace, next, prev, restart }),
+        [u, single, seen, goToFace, next, prev, restart]
+    );
+
+    /**
+     * The pages themselves. Held still across renders: the leaf elements keep
+     * their identity, so React skips the whole stack when the reading position
+     * changes — otherwise every page in the book re-rendered mid-turn.
+     */
+    const leaves = useMemo(
+        () => (
+            <>
+                <Leaf index={0} board deepFront front={<CoverFace />} back={<EndpaperFace />} />
+                <Leaf index={1} front={<TitlePage />} back={<CopyrightPage />} />
+                <Leaf index={2} front={<ContentsPage />} back={<VoiceBackendPage />} />
+                <Leaf index={3} front={<VoiceAiPage />} back={<EducationPage />} />
+                <Leaf index={4} front={<SkillsPage />} back={<WorkOpenerPage />} />
+                <Leaf index={5} front={<PlatePage index={0} />} back={<PlatePage index={1} />} />
+                <Leaf index={6} front={<PlatePage index={2} />} back={<PlatePage index={3} />} />
+                <Leaf index={7} front={<PlatePage index={4} />} back={<PlatePage index={5} />} />
+                <Leaf index={8} front={<AppendixPage />} back={<ExperiencePage />} />
+                <Leaf index={9} front={<AchievementsPage />} back={<CorrespondencePage />} />
+            </>
+        ),
+        []
     );
 
     const size = { width: PAGE_W, height: PAGE_H };
@@ -537,17 +618,10 @@ export const Book = () => {
                                                         aria-hidden="true"
                                                     />
 
-                                                    {/* Leaves, in reading order. */}
-                                                    <Leaf index={0} board deepFront front={<CoverFace />} back={<EndpaperFace />} />
-                                                    <Leaf index={1} front={<TitlePage />} back={<CopyrightPage />} />
-                                                    <Leaf index={2} front={<ContentsPage />} back={<VoiceBackendPage />} />
-                                                    <Leaf index={3} front={<VoiceAiPage />} back={<EducationPage />} />
-                                                    <Leaf index={4} front={<SkillsPage />} back={<WorkOpenerPage />} />
-                                                    <Leaf index={5} front={<PlatePage index={0} />} back={<PlatePage index={1} />} />
-                                                    <Leaf index={6} front={<PlatePage index={2} />} back={<PlatePage index={3} />} />
-                                                    <Leaf index={7} front={<PlatePage index={4} />} back={<PlatePage index={5} />} />
-                                                    <Leaf index={8} front={<AppendixPage />} back={<ExperiencePage />} />
-                                                    <Leaf index={9} front={<AchievementsPage />} back={<CorrespondencePage />} />
+                                                    {leaves}
+
+                                                    {/* The two who turn the pages, in front of the whole block. */}
+                                                    <Crew />
 
                                                     {/* Printed on the back board: the last page. */}
                                                     <div className="absolute inset-0" style={{ transform: `translateZ(${BASE_Z}px)` }}>

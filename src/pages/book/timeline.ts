@@ -23,13 +23,14 @@ export const LEAF_COUNT = 10;
 export const SPREAD_COUNT = LEAF_COUNT + 1;
 
 export const INTRO = 1.4;
-export const TURN = 1;
-export const DWELL = 1.8;
+/** A turn is the long part of a step: paper is heavy and should look it. */
+export const TURN = 1.6;
+export const DWELL = 1.3;
 export const FINAL_DWELL = 2.4;
 export const TOTAL = INTRO + LEAF_COUNT * TURN + (LEAF_COUNT - 1) * DWELL + FINAL_DWELL;
 
 /** Scroll height of one unit. The whole book is ~TOTAL × this. */
-export const VH_PER_UNIT = 55;
+export const VH_PER_UNIT = 62;
 
 /** Leaf thickness in design px — pages stack up visibly as the book is read. */
 export const LEAF_DZ = 1.6;
@@ -91,6 +92,43 @@ export const BEND = 21;
  * and zero at both ends so a page lands flat.
  */
 export const bendAngle = (t: number) => BEND * Math.sin(2 * Math.PI * t);
+
+/** Perspective on the stage. The crew need it to keep their hands on the page. */
+export const PERSPECTIVE = 2400;
+
+/** A turning page is drawn as this many hinged strips (see Leaf), so it can bend. */
+export const STRIPS = 3;
+export const STRIP_W = PAGE_W / STRIPS;
+
+/** How far strip k of a bending page has turned, in degrees. */
+export const stripAngle = (t: number, k: number) => 180 * t + k * bendAngle(t);
+
+/**
+ * The hinges of a turning page, from the spine out to the free edge: design px
+ * across (x) and toward the viewer (z). A bent page curls its far strips over,
+ * so the free edge is not simply where a flat rotation would put it.
+ */
+export const pageHinges = (t: number) => {
+    const points = [{ x: 0, z: 0 }];
+    let x = 0;
+    let z = 0;
+    for (let k = 0; k < STRIPS; k++) {
+        const a = (stripAngle(t, k) * Math.PI) / 180;
+        x += STRIP_W * Math.cos(a);
+        z += STRIP_W * Math.sin(a);
+        points.push({ x, z });
+    }
+    return points;
+};
+
+/**
+ * The free edge of a turning page, in the book's own 3D space: design px
+ * across from the spine (x) and toward the viewer (z), before the leaf's
+ * stacking height is added. Anything that holds the page holds it here —
+ * placed in 3D rather than lined up on screen, so it stays on the paper from
+ * every angle the book is seen at.
+ */
+export const pageEdge = (t: number) => pageHinges(t)[STRIPS];
 
 /** Index of the leaf currently in motion, or -1. */
 export const turningLeaf = (u: number) => {

@@ -567,11 +567,13 @@ export const CorrespondencePage = () => {
 const BOUND_ON = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 
 export const ColophonPage = () => {
-    const { restart, seenFaces } = useBook();
+    const { restart, seen } = useBook();
     const played = useFacePlayed('colophon');
-    // The cover and endpaper are not pages; everything with a folio is.
-    const read = FACES.filter((f) => f.folio && seenFaces.has(f.id)).length;
-    const total = FACES.filter((f) => f.folio).length;
+    // The cover and endpaper are not pages; everything with a folio is. Read
+    // as the last page renders, which is the only moment it is asked for.
+    const folios = FACES.filter((f) => f.folio).map((f) => f.id);
+    const read = seen.count(folios);
+    const total = folios.length;
     return (
         <PaperPage face="colophon" head={false} dogEar={false} className="flex flex-col items-center text-center">
             <p className="mt-6 text-[42px] italic font-medium leading-none">Finis</p>

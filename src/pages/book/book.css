@@ -427,3 +427,140 @@
     opacity: 1;
   }
 }
+
+/* ─── The page-turners ──────────────────────────────────────────────────────
+   Wingbeats, propellers and a sway that keep their own clocks, so a flyer is
+   alive even when the scroll has stopped with the page held in mid-air.
+   See Crew.tsx / flyers.tsx. */
+
+/* A cast shadow, down and right of the lamp, onto whatever is behind. */
+.bk-flyer-shadow {
+  filter: drop-shadow(3px 7px 4px rgba(24, 14, 4, 0.34));
+}
+
+/* Hanging from the grip, not bobbing off it. */
+.bk-sway {
+  animation: bk-sway 2.3s ease-in-out infinite;
+}
+
+@keyframes bk-sway {
+
+  0%,
+  100% {
+    transform: rotate(-2.2deg);
+  }
+
+  50% {
+    transform: rotate(2.6deg);
+  }
+}
+
+/* transform-box keeps an SVG rotation on the shape's own box, not the canvas;
+   each wing sets its root as transform-origin inline. */
+.bk-flap {
+  transform-box: fill-box;
+  animation: bk-flap 0.15s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+/* The same beat half a cycle on — the after-image a fast wing leaves. */
+.bk-flap-ghost {
+  animation-delay: -0.075s;
+}
+
+.bk-flap-far {
+  animation-duration: 0.158s;
+  animation-delay: -0.04s;
+}
+
+@keyframes bk-flap {
+  from {
+    transform: rotate(-17deg) scaleY(1.05);
+  }
+
+  to {
+    transform: rotate(9deg) scaleY(0.74);
+  }
+}
+
+/* A propeller blade seen almost edge-on: turning, it sweeps from full span to
+   a sliver and back — which is all a rotation looks like from this angle. */
+.bk-blade {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: bk-blade 0.1s linear infinite;
+}
+
+.bk-blade-b {
+  animation-delay: -0.05s;
+}
+
+@keyframes bk-blade {
+  0% {
+    transform: scaleX(1);
+  }
+
+  25% {
+    transform: scaleX(0.06);
+  }
+
+  50% {
+    transform: scaleX(-1);
+  }
+
+  75% {
+    transform: scaleX(0.06);
+  }
+
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+.bk-blink {
+  animation: bk-blink 1.4s steps(1, end) infinite;
+}
+
+@keyframes bk-blink {
+
+  0%,
+  8% {
+    opacity: 1;
+  }
+
+  9%,
+  100% {
+    opacity: 0.08;
+  }
+}
+
+/* Pollen shaken off the wings. */
+.bk-spark {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: bk-spark 1.9s ease-in-out infinite;
+}
+
+.bk-spark-b {
+  animation-duration: 2.4s;
+  animation-delay: -0.8s;
+}
+
+.bk-spark-c {
+  animation-duration: 2.1s;
+  animation-delay: -1.5s;
+}
+
+@keyframes bk-spark {
+
+  0%,
+  100% {
+    opacity: 0;
+    transform: translateY(2px) scale(0.5);
+  }
+
+  45% {
+    opacity: 0.9;
+    transform: translateY(-5px) scale(1);
+  }
+}

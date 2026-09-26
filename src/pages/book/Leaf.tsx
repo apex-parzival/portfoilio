@@ -5,11 +5,15 @@ import {
     BOARD_OVERHANG,
     PAGE_H,
     PAGE_W,
+    STRIPS,
+    STRIP_W,
     bendAngle,
     castFrom,
     leafRaw,
     leafT,
     leafZ,
+    turnEnd,
+    turnStart,
 } from './timeline';
 
 interface LeafProps {
@@ -29,9 +33,12 @@ const CAST_VERSO = 'linear-gradient(270deg, rgba(25,14,4,0.62) 0%, rgba(25,14,4,
 const GLINT =
     'linear-gradient(100deg, transparent 38%, rgba(255,248,232,0.55) 49%, rgba(255,248,232,0.18) 53%, transparent 63%)';
 
-/** A turning page is drawn as this many hinged strips, so it can bend. */
-const STRIPS = 3;
-const STRIP_W = PAGE_W / STRIPS;
+/**
+ * How far ahead of its turn a leaf builds its strips. Building them costs a
+ * frame, so it happens here — while the book is still — rather than on the
+ * first frame of the turn, where a dropped frame is plain to see.
+ */
+const ARM = 1.15;
 
 /**
  * One leaf of the book: two faces back to back, hinged on the spine.
@@ -57,10 +64,16 @@ export const Leaf = ({ index, front, back, board = false, deepFront = false }: L
         const r = leafRaw(index, v);
         return r > 0 && r < 1;
     };
+    const isArmed = (v: number) =>
+        !board && v > turnStart(index) - ARM && v < turnEnd(index) + ARM;
+
     const [bending, setBending] = useState(() => isBending(u.get()));
+    const [armed, setArmed] = useState(() => isArmed(u.get()));
     useMotionValueEvent(u, 'change', (v) => {
         const b = isBending(v);
         setBending((prev) => (prev === b ? prev : b));
+        const a = isArmed(v);
+        setArmed((prev) => (prev === a ? prev : a));
     });
 
     const t = useTransform(u, (v) => leafT(index, v));
@@ -79,12 +92,26 @@ export const Leaf = ({ index, front, back, board = false, deepFront = false }: L
                 height: PAGE_H,
             }}
         >
-            {bending ? (
-                <div className="absolute inset-0 pointer-events-none" style={{ transformStyle: 'preserve-3d' }}>
+            {/* The flat page: what you read, and what your clicks land on. */}
+            <div
+                className="absolute inset-0"
+                style={{
+                    transformStyle: 'preserve-3d',
+                    opacity: bending ? 0 : 1,
+                    pointerEvents: bending ? 'none' : undefined,
+                }}
+            >
+                <FlatFaces index={index} t={t} front={front} back={back} board={board} deepFront={deepFront} />
+            </div>
+
+            {/* The same page as hinged strips, standing by to take over the turn. */}
+            {armed && (
+                <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{ transformStyle: 'preserve-3d', opacity: bending ? 1 : 0 }}
+                >
                     <Strip k={0} t={t} front={front} back={back} />
                 </div>
-            ) : (
-                <FlatFaces index={index} t={t} front={front} back={back} board={board} deepFront={deepFront} />
             )}
         </motion.div>
     );

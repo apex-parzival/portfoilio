@@ -3,7 +3,9 @@ import {
     CHAPTERS,
     FACES,
     LEAF_COUNT,
+    PAGE_W,
     SPREAD_COUNT,
+    STRIPS,
     TOTAL,
     bendAngle,
     buildStops,
@@ -13,6 +15,8 @@ import {
     isRestingAt,
     leafT,
     leafZ,
+    pageEdge,
+    pageHinges,
     stopForFace,
     turnEnd,
     turnStart,
@@ -75,6 +79,46 @@ describe('book timeline', () => {
             expect(castFrom(i, turnStart(i), 'right')).toBe(0);
             expect(castFrom(i, turnEnd(i), 'left')).toBe(0);
         }
+    });
+});
+
+describe('the turning page on screen', () => {
+    it('puts the free edge at one fore-edge flat and the other when turned', () => {
+        expect(pageEdge(0).x).toBeCloseTo(PAGE_W, 6);
+        expect(pageEdge(0).z).toBeCloseTo(0, 6);
+        expect(pageEdge(1).x).toBeCloseTo(-PAGE_W, 6);
+        expect(pageEdge(1).z).toBeCloseTo(0, 6);
+    });
+
+    it('hinges the page into strips that always add up to its width', () => {
+        for (const t of [0, 0.17, 0.4, 0.5, 0.83, 1]) {
+            const pts = pageHinges(t);
+            expect(pts).toHaveLength(STRIPS + 1);
+            let run = 0;
+            for (let k = 1; k < pts.length; k++) {
+                run += Math.hypot(pts[k].x - pts[k - 1].x, pts[k].z - pts[k - 1].z);
+            }
+            expect(run).toBeCloseTo(PAGE_W, 6);
+        }
+    });
+
+    it('carries its edge over smoothly, toward the viewer and back down', () => {
+        // A flyer's grip rides this point, so any jump here is a hand
+        // letting go of the page. Steps vary with the page's speed, which
+        // peaks mid-turn, but never by more than a steady sweep allows.
+        const steps: number[] = [];
+        let prev = pageEdge(0);
+        for (let t = 0.002; t <= 1; t += 0.002) {
+            const e = pageEdge(t);
+            steps.push(Math.hypot(e.x - prev.x, e.z - prev.z));
+            expect(e.z).toBeGreaterThanOrEqual(-1e-9);
+            prev = e;
+        }
+        const mean = steps.reduce((a, b) => a + b, 0) / steps.length;
+        expect(Math.max(...steps)).toBeLessThan(mean * 2.5);
+        // Over the top it stands a page-width proud of the spine.
+        expect(pageEdge(0.5).z).toBeCloseTo(PAGE_W, 0);
+        expect(Math.abs(pageEdge(0.5).x)).toBeLessThan(1);
     });
 });
 
